@@ -1,0 +1,139 @@
+body {
+    background-color: #f8f9fa;
+    font-family: "Poppins", serif;
+}
+
+.content {
+    padding: 20px;
+}
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Bayangan tambahan */
+    background-color: #003366; /* Warna latar biru */
+    color: white; /* Teks warna putih */
+    height: 120px; /* Tinggi kartu */
+    padding: 20px; /* Padding untuk memberikan ruang */
+    display: flex;
+    align-items: center;
+}
+.card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.card-content h5 {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+.card-content h3 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+.table thead {
+    background-color: #003366;
+    color: white;
+}
+.table tbody tr {
+    background-color: #e7f0fa;
+}
+.table tbody tr:nth-child(odd) {
+    background-color: #cfe3f5;
+}
+
+/* Style Sidebar Dashboard Admin*/
+#sidebar {
+    height: 100vh;
+    width: 272px;
+    background-color: #0b4575;
+    position: fixed;
+    z-index: 10;
+}
+
+/* judul DASHBOARD sidebar admin */
+#sidebar h5 {
+    font-weight: 700;
+    color: #ffffff;
+    margin: 40px;
+    cursor: pointer;
+    height: 40px;
+    width: 150px;
+    text-align: center;
+    padding-top: 5px;
+}
+
+#sidebar h5:hover {
+    background-color: #bc7a4a;
+    border-radius: 50px;
+    height: 40px;
+    width: 150px;
+    text-align: center;
+    padding-top: 5px;
+    transition: ease 200ms;
+}
+
+#sidebar h5.active {
+    background-color: #FF6B00;
+    border-radius: 50px;
+    height: 40px;
+    width: 150px;
+    text-align: center;
+    padding-top: 5px;
+}
+
+/* list menu dashboard */
+#sidebar p {
+    padding: 7px;
+    font-weight: 500;
+    color: #ffffff;
+    height: 40px;
+    width: 100px;
+    text-align: center;
+    cursor: pointer;
+}
+
+#sidebar p:hover {
+    background-color: #bc7a4a;
+    border-radius: 50px;
+    height: 40px;
+    width: 100px;
+    transition: ease 200ms;
+}
+
+#sidebar p.active {
+    background-color: #FF6B00;
+    border-radius: 50px;
+    height: 40px;
+    width: 100px;
+}
+
+/*button add product di library*/
+.button-addProd .btn {
+    width: 160px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    border-radius: 50px;
+    color: #FFF;
+    background: #0b4575;
+    border: none;
+    height: 35px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.button-addProd .btn:hover {
+    background-color: #668eb2;
+    color:black;
+}
+
+.modal-footer .btn-save {
+    color: #FFF;
+    background: #0b4575;
+}
+
+.modal-footer .btn-save:hover {
+    background-color: #668eb2;
+    color:black;
+}
+
+.dashboard-title:hover {
+    color: #000000;
+}

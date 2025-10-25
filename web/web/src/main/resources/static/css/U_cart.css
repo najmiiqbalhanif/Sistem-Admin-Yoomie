@@ -1,0 +1,436 @@
+/* General Styles */
+body {
+    background-color: #ffffff;
+    font-family: "Poppins", sans-serif;
+}
+
+.image-cart {
+    margin-right: 15px;
+}
+
+.btn-outline-secondary {
+    border: none;
+    color: #333;
+}
+.btn-outline-secondary:hover {
+    background-color: #f8f9fa;
+    color: #000;
+}
+
+/* Hero Section */
+#hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 0;
+    min-height: 100vh; /* Full viewport height */
+}
+
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.hero-title {
+    color: #0b4575;
+    font-family: "Protest Strike", sans-serif;
+    font-size: 54px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 4px;
+    max-width: 800px;
+    margin-bottom: 10px;
+    margin-top: 40px;
+}
+
+.hero-subtitle {
+    margin-top: 20px;
+    font-size: 1.25rem;
+    color: #666;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%; /* 36px */
+    letter-spacing: 0.48px;
+}
+
+.button .btn-summary {
+    display: inline-flex; /* Ini memastikan tombol terpusat */
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    background: #0B4575;
+    color: #FFF;
+    font-size: 20px;
+    font-weight: 600;
+    height: 60px;
+    border: none;
+    margin-top: 5px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer; /* Tambahan agar tombol terlihat interaktif */
+}
+
+.button .btn-summary:hover {
+    background-color: #668eb2;
+}
+
+/* HeroBaru Section */
+#herobaru {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+    min-height: 100vh; /* Full viewport height */
+}
+
+#herobaru .btn-hero {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    background: #0B4575;
+    color: #FFF;
+    font-size: 24px;
+    font-weight: 700;
+    width: 248px;
+    height: 62px;
+    border: none;
+    margin-top: 26px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#herobaru .btn-primary {
+    display: inline-flex; /* Ini memastikan tombol terpusat */
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    background: #0B4575;
+    color: #FFF;
+    font-size: 24px;
+    font-weight: 700;
+    width: 140px;
+    height: 62px;
+    border: none;
+    margin-top: 26px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer; /* Tambahan agar tombol terlihat interaktif */
+}
+
+.isi {
+    display: flex;
+    flex-direction: column; /* Membuat elemen vertikal */
+    align-items: center; /* Agar tombol terpusat secara horizontal */
+}
+
+.hero-image-wrapper {
+    position: relative;
+    display: inline-block; /* Agar sesuai dengan ukuran gambar */
+}
+
+.hero-image-wrapper img {
+    display: block; /* Hindari whitespace pada gambar */
+    width: 100%; /* Pastikan gambar responsive */
+}
+
+.hero-image-wrapper .overlay {
+    background-color: rgba(0, 0, 0, 0);
+    opacity: 0;
+    transition: all ease-in-out 0.2s;
+    width: 100%; /* Pastikan overlay menyesuaikan gambar */
+    height: 100%;
+}
+
+.hero-image-wrapper:hover .overlay {
+    background-color: rgba(0, 0, 0, 0.6);
+    opacity: 1;
+}
+
+/* Fitur New Arrival */
+#NewArrival {
+    padding: 67px 78px;
+    background-color: #ffffff;
+}
+
+#newArrival .row {
+    align-items: center; /* Ratakan vertikal */
+}
+
+.button-fitur {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background-color: #0B4575;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.arrow-icon {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+}
+
+
+#NewArrival h5 {
+    color: #000000;
+    font-size: 25px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    margin-bottom: 50px;
+}
+
+#NewArrival h4 {
+    color: #000;
+    font-family: Poppins;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%; /* 31.5px */
+    letter-spacing: 0.42px;
+}
+
+.add-more-text {
+    margin-right: 5px;
+    color: #000;
+    font-family: Poppins;
+    font-size: 19px;
+    font-weight: 400;
+    margin: 0;
+    line-height: 1.2; /* Ratakan posisi */
+}
+
+#NewArrival .jenisSepatu {
+    color: var(--Text-Tint-20, #6C7581);
+    font-family: Poppins;
+    font-size: 17px;
+    font-style: normal;
+    font-weight: 400;
+}
+
+#NewArrival .hargaSepatu {
+    color: #000;
+    font-family: Poppins;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%; /* 28.5px */
+    letter-spacing: 0.38px;
+}
+
+.info-card {
+    text-align: left;
+}
+
+
+.sepatu1 {
+    border-radius: 8px;
+}
+
+.card-fitur {
+    width: 100%;
+    height: 300px;
+    border-radius: 8px;
+    background-color: var(--pr-colorB);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+}
+
+.card-fitur img {
+    width: 100%;
+}
+
+/* Fitur Classic */
+#classic {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+#classic h5 {
+    color: #000000;
+    font-size: 25px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    margin-bottom: 20px;
+    margin-left: 85px;
+}
+
+.container-fluid {
+    padding: 0;
+}
+
+.row {
+    margin: 0;
+}
+
+.kanan-classic {
+    margin-right: 90px;
+}
+
+.card-fitur img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+.arrow-left{
+    z-index: 1000;
+    border: none;
+    border-radius: 50%;
+    width: 61px;
+    height: 61px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 20px;
+    margin-left: 15px;
+}
+
+.arrow-right {
+    z-index: 1000;
+    border: none;
+    border-radius: 50%;
+    width: 61px;
+    height: 61px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 20px;
+    margin-right: 15px;
+}
+
+/* Dont Miss Section */
+.hero-heading {
+    color: #000000;
+    font-size: 25px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    margin-bottom: 35px;
+}
+
+.hero-heading {
+    margin-left: 20px;
+}
+
+.dontmiss-heading {
+    color: #000000;
+    font-size: 25px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    margin-bottom: 35px;
+    text-align: left;
+    margin-left: 85px;
+}
+
+
+/* Footer */
+#Footer {
+    background-color: #0B4575 ;
+    color: #ffffff;
+    padding: 67px 78px;
+}
+
+#Footer p {
+    color: #ffffff;
+    font-size: 19px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+    letter-spacing: 0.48px;
+}
+
+#Footer span {
+    color: var(--Neutral-6, #f0f1f2);
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 150%;
+}
+
+#Footer .container .row > div {
+    padding: 0 15px;
+}
+
+.circle-icon {
+    width: 38px;
+    height: 38px;
+    background-color: #ccbebe28;
+    border-radius: 50%;
+}
+
+#Footer h5 {
+    color: var(--Neutral-7, #FFF);
+    /* Desktop/Heading 4/Bold/DMSans */
+    font-size: 26px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 150%; /* 39px */
+}
+
+#Footer ul {
+    padding: 0;
+    list-style: none;
+}
+
+#Footer ul li {
+    margin-bottom: 10px;
+}
+
+#Footer ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+#Footer ul li i {
+    margin-right: 10px;
+}
+
+.list-navigasi {
+    color: #ffffff;
+    font-size: 24px;
+    line-height: 150%;
+    letter-spacing: 0.48px;
+}
+
+.list-kontak {
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 150%;
+    letter-spacing: 0.48px;
+}
+
+.circle-scroll {
+    width: 70px;
+    height: 70px;
+    background-color: #000000;
+    border-radius: 50%;
+}
+
+.circle-scroll img {
+    width: 24px;
+    height: 24px;
+}
+
+

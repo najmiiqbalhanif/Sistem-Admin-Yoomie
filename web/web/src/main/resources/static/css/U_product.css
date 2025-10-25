@@ -1,0 +1,135 @@
+.size-prod.active {
+    background-color: #e0e0e0;
+    border-color: #000;
+    color: #000;
+}
+
+.size-prod {
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.size-prod:disabled {
+    cursor: not-allowed;
+    background-color: #f5f5f5;
+    border-color: #ccc;
+    color: #999;
+}
+
+.button-addnfav .btn:disabled {
+    cursor: not-allowed;
+    background-color: #e0e0e0;
+    color: #999;
+    border: none;
+}
+
+.size-prod {
+    padding: 15px 10px;
+    margin: 5px;
+    font-size: 15px;
+    background-color: #ddd;
+    border: 2px solid white; /* Sisi tombol default putih */
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.size-prod.active-size {
+    background-color: white;
+    color: black;
+}
+
+.size-prod:hover {
+    border-color: black; /* Warna hitam saat hover */
+}
+
+.size-prod:active {
+    border-color: black; /* Warna hitam saat tombol diklik */
+}
+
+.size-prod:disabled {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+    color: #aaa;
+}
+
+/* Tambahkan spasi antara tombol bagian atas dan bawah */
+.size-product button {
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+
+.secondary-image {
+    height: 600px;
+    width: 60px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sec-image {
+    height: 60px;
+    width: 60px;
+}
+
+.primary-image {
+    height: 600px;
+    width: 600px;
+}
+
+.prim-image {
+    height: 100%;
+    width: 100%;
+}
+
+.desc-content {
+    height: 600px;
+    width: 400px;
+}
+
+.desc-content p {
+    font-weight: 650;
+}
+
+.mod-image {
+    height: 80px;
+    width: 80px;
+    margin-right: 1rem
+}
+
+.size-product {
+    flex-wrap: wrap;
+}
+
+.size-prod {
+    margin-right: 7px;
+    height: 37px;
+    width: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px #b2b8c1 solid;
+    border-radius: 4px;
+}
+
+.button-addnfav{
+    margin-top: 6px;
+}
+
+.button-addnfav .btn {
+    width: 100%;
+    margin-top: 6px;
+    border-radius: 50px;
+    color: #FFF;
+    background: #0b4575;
+    border: none;
+    height: 60px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.button-addnfav .btn:hover {
+    background-color: #668eb2;
+    color:black;
+}

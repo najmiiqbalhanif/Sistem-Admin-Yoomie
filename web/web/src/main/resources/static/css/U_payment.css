@@ -1,0 +1,60 @@
+body {
+    background-color: #ffffff;
+    font-family: "Poppins", sans-serif;
+}
+
+/* Tambahkan tinggi navbar agar konten sticky di bawahnya */
+.right-section {
+    position: sticky;
+    top: 80px; /* Sesuaikan dengan tinggi navbar */
+    height: calc(100vh - 80px); /* Pastikan konten kanan bisa full viewport minus navbar */
+    overflow-y: auto; /* Jika konten di dalamnya panjang, tambahkan scroll */
+    background-color: #fff;
+    border-left: none; /* Menghapus border kiri */
+    padding: 20px;
+}
+
+.right-section::-webkit-scrollbar {
+    display: none; /* Untuk Chrome, Safari, dan Edge */
+}
+
+
+.order-summary {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+}
+.order-summary img {
+    width: 100%;
+    max-width: 100px;
+}
+.free-shipping {
+    color: green;
+    font-weight: bold;
+}
+
+.penjelasan {
+    width: 450px;
+}
+
+.form-control {
+    width: 470px;
+    height: 55px;
+}
+
+.shipping-option {
+    height: 70px ;
+    border-radius: 50px;
+}
+
+.shipping-option.active {
+    background-color: #dddddd;
+    border: 2px solid #007bff; /* Opsional: Untuk memberi batas tegas */
+}
+
+.alert {
+    padding: 15px;
+    background-color: #4CAF50; /* Green */
+    color: white;
+    margin-bottom: 20px;
+}
