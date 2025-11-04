@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 @RestController
 @RequestMapping("/ProfImg")
 @CrossOrigin(origins = "*") // jika diakses dari Flutter
-public class ProfileImageControllerREST {
+public class profileImageControllerREST {
 
     private static final String UPLOAD_DIR = "uploads/";
 

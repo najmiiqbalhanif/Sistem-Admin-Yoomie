@@ -10,12 +10,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user")
-public class U_homepageControllerREST {
+public class homepageControllerREST {
 
     private final ProductService productService;
 
     @Autowired
-    public U_homepageControllerREST(ProductService productService) {
+    public homepageControllerREST(ProductService productService) {
         this.productService = productService;
     }
 

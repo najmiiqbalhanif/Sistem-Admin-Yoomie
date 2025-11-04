@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/profilepage")
 @CrossOrigin(origins = "*") // Agar Flutter dapat mengakses (jika frontend dan backend terpisah)
-public class profilepageControllerREST {
+public class profilePageControllerREST {
 
     private final UserService userService;
 
     @Autowired
-    public profilepageControllerREST(UserService userService) {
+    public profilePageControllerREST(UserService userService) {
         this.userService = userService;
     }
 

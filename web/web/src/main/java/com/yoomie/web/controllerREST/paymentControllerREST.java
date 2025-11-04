@@ -17,11 +17,11 @@ import java.util.stream.Collectors;
 @RestController
 // Ubah base request mapping atau buat controller baru untuk transactions
 @RequestMapping("/api")
-public class checkoutPaymentControllerREST { // Atau rename menjadi TransactionControllerREST jika lebih sesuai
+public class paymentControllerREST { // Atau rename menjadi TransactionControllerREST jika lebih sesuai
     private final TransactionService transactionService;
     private final UserService userService;
 
-    public checkoutPaymentControllerREST(TransactionService transactionService, UserService userService) {
+    public paymentControllerREST(TransactionService transactionService, UserService userService) {
         this.transactionService = transactionService;
         this.userService = userService;
     }

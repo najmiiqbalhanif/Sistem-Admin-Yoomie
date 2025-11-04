@@ -13,12 +13,12 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/editprofilepage")
 @CrossOrigin(origins = "*") // Supaya bisa diakses dari Flutter
-public class EditProfilePageControllerREST {
+public class editProfilePageControllerREST {
 
     private final UserService userService;
 
     @Autowired
-    public EditProfilePageControllerREST(UserService userService) {
+    public editProfilePageControllerREST(UserService userService) {
         this.userService = userService;
     }
 

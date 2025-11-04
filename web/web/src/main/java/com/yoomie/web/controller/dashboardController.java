@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class A_dashboardController {
+public class dashboardController {
     private final ProductService productService;
     private final TransactionService transactionService;
     private final UserService userService;
     private final CartService cartService;
     private final PaymentService paymentService;
 
-    public A_dashboardController(ProductService productService, TransactionService transactionService, UserService userService, CartService cartService, PaymentService paymentService) {
+    public dashboardController(ProductService productService, TransactionService transactionService, UserService userService, CartService cartService, PaymentService paymentService) {
         this.productService = productService;
         this.transactionService = transactionService;
         this.userService = userService;

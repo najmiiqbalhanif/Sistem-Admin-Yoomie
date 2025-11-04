@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/shoppage") // Prefix endpoint REST
-public class shoppageControllerREST {
+@RequestMapping("/api/pospage") // Prefix endpoint REST
+public class posPageControllerREST {
 
     private final ProductService productService;
 
-    public shoppageControllerREST(ProductService productService) {
+    public posPageControllerREST(ProductService productService) {
         this.productService = productService;
     }
 

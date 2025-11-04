@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.validation.Valid;
 
 @Controller
-public class LoginRegisterController {
+public class loginRegisterController {
 
     private final UserService userService;
 
     @Autowired
-    public LoginRegisterController(UserService userService) {
+    public loginRegisterController(UserService userService) {
         this.userService = userService;
     }
 
