@@ -27,7 +27,7 @@
     <!-- SIDEBAR -->
     <div class="col-md-3 d-flex flex-column align-items-center" id="sidebar">
         <h5 class="dashboard-link" menu-dashboard="dashboard">Dashboard</h5>
-        <p class="dashboard-link" menu-dashboard="order" >Order</p>
+        <p class="dashboard-link" menu-dashboard="transaction" >Transaction</p>
         <p class="dashboard-link" menu-dashboard="library">Library</p>
         <p class="dashboard-link" menu-dashboard="reports">Reports</p>
         <p class="dashboard-link" menu-dashboard="reviews">Reviews</p>
@@ -100,10 +100,10 @@
             </div>
         </div>
 
-        <!--Konten Order-->
-        <div class="content-dashboard order" id="order">
+        <!--Konten Transaction-->
+        <div class="content-dashboard transaction" id="transaction">
             <div class="row g-0 mb-2 pt-4" style="padding-left: 300px; width: 99vw; height: fit-content">
-                <h2><b>Order</b></h2>
+                <h2><b>Transaction</b></h2>
 
                 <!-- Modal Cart Items pada button cart -->
                 <div id="cartModal" class="modal fade" tabindex="-1" role="dialog">
@@ -132,13 +132,13 @@
                     </div>
                 </div>
 
-                <!-- Table Current Order -->
+                <!-- Table Current Transaction -->
                 <table class="table table-bordered">
                     <thead>
                     <tr>
-                        <th>Order ID</th>
+                        <th>Transaction ID</th>
                         <th>Username</th>
-                        <th>Order Date</th>
+                        <th>Transaction Date</th>
                         <th>Cart</th>
                         <th>Amount</th>
                         <th>Payment Method</th>
@@ -147,34 +147,34 @@
                         <th>Action</th>
                     </tr>
                     </thead>
-                    <tbody th:each="order : ${orders}">
+                    <tbody th:each="transaction : ${transactions}">
                     <tr>
-                        <td th:text="${order.getId()}"></td>
-                        <td th:text="${order.getUsername()}"></td>
-                        <td th:text="${order.getCreatedOn()}"></td>
+                        <td th:text="${transaction.getId()}"></td>
+                        <td th:text="${transaction.getUsername()}"></td>
+                        <td th:text="${transaction.getCreatedOn()}"></td>
                         <td>
                             <button style="background-color: #0b4575; border: none; border-radius: 8px"
                                     data-bs-toggle="modal" data-bs-target="#cartModal"
                                     class="btn btn-cart"
-                                    th:attr="data-order-id=${order.getId()}">
-                                <img src="img/cart-order.svg" />
+                                    th:attr="data-transaction-id=${transaction.getId()}">
+                                <img src="img/cart-transaction.svg" />
                             </button>
                         </td>
-                        <td th:text="${order.getTotalAmount()}"></td>
-                        <td th:text="${order.getPaymentMethod()}"></td>
+                        <td th:text="${transaction.getTotalAmount()}"></td>
+                        <td th:text="${transaction.getPaymentMethod()}"></td>
                         <td>
                             <select class="form-select status-dropdown"
-                                    th:data-order-id="${order.getId()}"
-                                    th:value="${order.getPaymentStatus()}">
-                                <option value="paid" th:selected="${order.paymentStatus == 'paid'}">
+                                    th:data-transaction-id="${transaction.getId()}"
+                                    th:value="${transaction.getPaymentStatus()}">
+                                <option value="paid" th:selected="${transaction.paymentStatus == 'paid'}">
                                     Paid
                                 </option>
-                                <option value="on process" th:selected="${order.paymentStatus == 'on process'}">
+                                <option value="on process" th:selected="${transaction.paymentStatus == 'on process'}">
                                     On Process
                                 </option>
                             </select>
                         </td>
-                        <td th:text="${order.getAddress()}"></td>
+                        <td th:text="${transaction.getAddress()}"></td>
                         <td>
                             <!-- Tombol Edit -->
                             <button class="btn btn-primary btn-sm button-editProd"

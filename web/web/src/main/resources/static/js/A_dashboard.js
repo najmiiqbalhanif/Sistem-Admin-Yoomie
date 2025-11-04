@@ -100,10 +100,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     cartButtons.forEach(button => {
         button.addEventListener('click', function () {
-            const orderId = button.getAttribute('data-order-id');
+            const transactionId = button.getAttribute('data-transaction-id');
 
             // Tambahkan URL yang sesuai dengan endpoint
-            fetch(`/A_dashboard/${orderId}/paymentItems`)
+            fetch(`/A_dashboard/${transactionId}/paymentItems`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -136,10 +136,10 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.status-dropdown').forEach(dropdown => {
         dropdown.addEventListener('change', function () {
-            const orderId = this.getAttribute('data-order-id');
+            const transactionId = this.getAttribute('data-transaction-id');
             const newStatus = this.value;
 
-            fetch(`/A_dashboard/updateStatus/${orderId}`, {
+            fetch(`/A_dashboard/updateStatus/${transactionId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'

@@ -19,12 +19,12 @@ body {
 }
 
 
-.order-summary {
+.transaction-summary {
     background-color: #ffffff;
     padding: 20px;
     border-radius: 8px;
 }
-.order-summary img {
+.transaction-summary img {
     width: 100%;
     max-width: 100px;
 }
