@@ -19,14 +19,14 @@ import java.util.Map;
 public class dashboardController {
     private final ProductService productService;
     private final TransactionService transactionService;
-    private final UserService userService;
+    private final CashierService cashierService;
     private final CartService cartService;
     private final PaymentService paymentService;
 
-    public dashboardController(ProductService productService, TransactionService transactionService, UserService userService, CartService cartService, PaymentService paymentService) {
+    public dashboardController(ProductService productService, TransactionService transactionService, CashierService cashierService, CartService cartService, PaymentService paymentService) {
         this.productService = productService;
         this.transactionService = transactionService;
-        this.userService = userService;
+        this.cashierService = cashierService;
         this.cartService = cartService;
         this.paymentService = paymentService;
     }

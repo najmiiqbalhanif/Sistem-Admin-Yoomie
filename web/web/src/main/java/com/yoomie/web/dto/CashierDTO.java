@@ -8,10 +8,10 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserDTO {
+public class CashierDTO {
     private Long id;
-    @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
-    private String username;
+    @Size(min = 3, max = 20, message = "CashierName must be between 3 and 20 characters")
+    private String cashierName;
     private String email;
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;

@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentDTO {
-    private Long userId;
-    private String username;
+    private Long cashierId;
+    private String cashierName;
     private String paymentMethod;
     private String address;
     private Double totalAmount;

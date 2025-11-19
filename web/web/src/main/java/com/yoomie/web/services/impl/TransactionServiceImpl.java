@@ -7,7 +7,7 @@ import com.yoomie.web.dto.PaymentItemDTO;
 import com.yoomie.web.models.Transaction;
 import com.yoomie.web.models.Payment;
 import com.yoomie.web.models.PaymentItem;
-import com.yoomie.web.models.User;
+import com.yoomie.web.models.Cashier;
 import com.yoomie.web.repositories.OrderRepository;
 import com.yoomie.web.repositories.PaymentItemRepository;
 import com.yoomie.web.repositories.PaymentRepository;
@@ -40,8 +40,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> getTransactionsByUserId(Long userId) {
-        return orderRepository.findByUserId(userId);
+    public List<Transaction> getTransactionsByCashierId(Long cashierId) {
+        return orderRepository.findByCashierId(cashierId);
     }
 
     @Override
@@ -64,8 +64,8 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionDTO transactionToDTO(Transaction transaction) {
         return TransactionDTO.builder()
                 .id(transaction.getId())
-                .userId(transaction.getUser().getId())
-                .username(transaction.getUser().getUsername())
+                .cashierId(transaction.getCashier().getId())
+                .cashierName(transaction.getCashier().getCashierName())
                 .createdOn(transaction.getPayment().getCreatedOn().toString())
                 .cartSummary(transaction.getPayment().getPaymentItems().stream()
                         .map(item -> item.getProductName() + " x " + item.getQuantity())
@@ -78,12 +78,12 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Transactional
-    public Transaction processCheckout(User user, Payment payment, List<PaymentItemDTO> paymentItems) {
+    public Transaction processCheckout(Cashier cashier, Payment payment, List<PaymentItemDTO> paymentItems) {
         payment.setStatus("PENDING");
         payment = paymentRepository.save(payment);
 
         Transaction transaction = new Transaction();
-        transaction.setUser(user);
+        transaction.setCashier(cashier);
         transaction.setPayment(payment);
         transaction = orderRepository.save(transaction);
 
@@ -98,7 +98,7 @@ public class TransactionServiceImpl implements TransactionService {
             paymentItemRepository.save(paymentItem);
         }
 
-        cartService.clearCart(user.getId()); // Panggil clearCart di sini
+        cartService.clearCart(cashier.getId()); // Panggil clearCart di sini
 
         return transaction;
     }

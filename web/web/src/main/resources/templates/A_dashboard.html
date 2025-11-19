@@ -31,7 +31,7 @@
         <p class="dashboard-link" menu-dashboard="library">Library</p>
         <p class="dashboard-link" menu-dashboard="reports">Reports</p>
         <p class="dashboard-link" menu-dashboard="reviews">Reviews</p>
-        <p class="dashboard-link" menu-dashboard="user">User</p>
+        <p class="dashboard-link" menu-dashboard="cashier">Cashier</p>
     </div>
     <div class="col-md-9">
         <!--Konten Dashboard-->
@@ -137,7 +137,7 @@
                     <thead>
                     <tr>
                         <th>Transaction ID</th>
-                        <th>Username</th>
+                        <th>CashierName</th>
                         <th>Transaction Date</th>
                         <th>Cart</th>
                         <th>Amount</th>
@@ -150,7 +150,7 @@
                     <tbody th:each="transaction : ${transactions}">
                     <tr>
                         <td th:text="${transaction.getId()}"></td>
-                        <td th:text="${transaction.getUsername()}"></td>
+                        <td th:text="${transaction.getCashierName()}"></td>
                         <td th:text="${transaction.getCreatedOn()}"></td>
                         <td>
                             <button style="background-color: #0b4575; border: none; border-radius: 8px"

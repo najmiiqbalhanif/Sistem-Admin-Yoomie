@@ -21,9 +21,9 @@ public class cartControllerREST {
     private static final String BASE_IMAGE_URL = "http://10.0.2.2:8080/"; // Sesuaikan jika perlu
 
     @PostMapping("/add")
-    public ResponseEntity<String> addToCart(@RequestParam Long userId, @RequestParam Long productId) {
+    public ResponseEntity<String> addToCart(@RequestParam Long cashierId, @RequestParam Long productId) {
         try {
-            cartService.addToCart(userId, productId);
+            cartService.addToCart(cashierId, productId);
             return ResponseEntity.ok("Product added to cart successfully.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to add product to cart: " + e.getMessage());
@@ -33,9 +33,9 @@ public class cartControllerREST {
     // --- START: Endpoint Baru/Revisi ---
 
     @PostMapping("/decrease")
-    public ResponseEntity<String> decreaseProductQuantity(@RequestParam Long userId, @RequestParam Long productId) {
+    public ResponseEntity<String> decreaseProductQuantity(@RequestParam Long cashierId, @RequestParam Long productId) {
         try {
-            cartService.decreaseProductQuantity(userId, productId);
+            cartService.decreaseProductQuantity(cashierId, productId);
             return ResponseEntity.ok("Product quantity decreased successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
@@ -45,9 +45,9 @@ public class cartControllerREST {
     }
 
     @DeleteMapping("/remove") // Menggunakan DELETE request untuk penghapusan
-    public ResponseEntity<String> removeProductFromCart(@RequestParam Long userId, @RequestParam Long productId) {
+    public ResponseEntity<String> removeProductFromCart(@RequestParam Long cashierId, @RequestParam Long productId) {
         try {
-            cartService.removeProductFromCart(userId, productId);
+            cartService.removeProductFromCart(cashierId, productId);
             return ResponseEntity.ok("Product removed from cart successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
@@ -58,16 +58,16 @@ public class cartControllerREST {
 
     @PostMapping("/updateQuantity") // Menggunakan POST untuk update quantity
     public ResponseEntity<String> updateProductQuantity(
-            @RequestParam Long userId,
+            @RequestParam Long cashierId,
             @RequestParam Long productId,
             @RequestParam int quantity) { // 'quantity' adalah nilai baru
         try {
             if (quantity <= 0) {
                 // Jika quantity 0 atau kurang, perlakukan sebagai penghapusan
-                cartService.removeProductFromCart(userId, productId);
+                cartService.removeProductFromCart(cashierId, productId);
                 return ResponseEntity.ok("Product removed from cart (quantity updated to 0).");
             } else {
-                cartService.updateProductQuantity(userId, productId, quantity);
+                cartService.updateProductQuantity(cashierId, productId, quantity);
                 return ResponseEntity.ok("Product quantity updated successfully.");
             }
         } catch (IllegalArgumentException e) {
@@ -79,11 +79,11 @@ public class cartControllerREST {
 
     // --- END: Endpoint Baru/Revisi ---
 
-    // Ambil semua item cart berdasarkan userId
-    @GetMapping("/items/{userId}")
-    public ResponseEntity<List<CartItemDTO>> getCartItems(@PathVariable Long userId) {
+    // Ambil semua item cart berdasarkan cashierId
+    @GetMapping("/items/{cashierId}")
+    public ResponseEntity<List<CartItemDTO>> getCartItems(@PathVariable Long cashierId) {
         try {
-            List<CartItem> cartItems = cartService.getCartItemsByUserId(userId);
+            List<CartItem> cartItems = cartService.getCartItemsByCashierId(cashierId);
 
             List<CartItemDTO> cartItemDTOs = cartItems.stream()
                     .map(item -> {
@@ -108,10 +108,10 @@ public class cartControllerREST {
 
             return ResponseEntity.ok(cartItemDTOs);
         } catch (IllegalArgumentException e) { // Tangkap exception jika cart tidak ditemukan
-            System.err.println("Error fetching cart items for user " + userId + ": " + e.getMessage());
+            System.err.println("Error fetching cart items for cashier " + cashierId + ": " + e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Misalnya, 404 Not Found
         } catch (Exception e) {
-            System.err.println("Unexpected error fetching cart items for user " + userId + ": " + e.getMessage());
+            System.err.println("Unexpected error fetching cart items for cashier " + cashierId + ": " + e.getMessage());
             e.printStackTrace(); // Cetak stack trace untuk debugging
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

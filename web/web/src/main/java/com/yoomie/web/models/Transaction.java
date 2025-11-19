@@ -12,8 +12,8 @@ import lombok.*;
 public class Transaction extends BaseEntity {
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "cashier_id", nullable = false)
+    private Cashier cashier;
 
     @OneToOne
     @JoinColumn(name = "payment_id", nullable = false)

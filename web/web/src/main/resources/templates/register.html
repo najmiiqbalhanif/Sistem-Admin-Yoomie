@@ -33,9 +33,9 @@
       <h3 class="judul-register">Get Started</h3>
       <p class="ms-1" style="color: #00000081;">Already have an account? <a href="/login" style="text-decoration: none; color: black;">Sign in</a></p>
       <form action="/register" method="POST" id="registerForm">
-        <div class="input-username-register mb-2">
-          <label class="ms-1" style="color: #00000081;">Username</label>
-          <input type="text" class="form-control input-register" name="username" placeholder="Username" required>
+        <div class="input-cashierName-register mb-2">
+          <label class="ms-1" style="color: #00000081;">CashierName</label>
+          <input type="text" class="form-control input-register" name="cashierName" placeholder="Cashiername" required>
         </div>
         <div class="input-email-register mb-2">
           <label class="ms-1" style="color: #00000081;">Email</label>
@@ -56,7 +56,7 @@
 <script>
   function submitForm() {
     const formData = {
-      username: document.querySelector('[name="username"]').value,
+      cashierName: document.querySelector('[name="cashierName"]').value,
       email: document.querySelector('[name="email"]').value,
       password: document.querySelector('[name="password"]').value
     };

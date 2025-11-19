@@ -1,7 +1,7 @@
 package com.yoomie.web.controllerREST;
 
-import com.yoomie.web.dto.UserDTO;
-import com.yoomie.web.services.UserService;
+import com.yoomie.web.dto.CashierDTO;
+import com.yoomie.web.services.CashierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,32 +15,32 @@ import java.io.IOException;
 @CrossOrigin(origins = "*") // Supaya bisa diakses dari Flutter
 public class editProfilePageControllerREST {
 
-    private final UserService userService;
+    private final CashierService cashierService;
 
     @Autowired
-    public editProfilePageControllerREST(UserService userService) {
-        this.userService = userService;
+    public editProfilePageControllerREST(CashierService cashierService) {
+        this.cashierService = cashierService;
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserDTO> getProfileByUserId(@PathVariable Long userId) {
-        UserDTO user = userService.DTOgetUserById(userId);
-        if (user == null) {
+    @GetMapping("/{cashierId}")
+    public ResponseEntity<CashierDTO> getProfileByCashierId(@PathVariable Long cashierId) {
+        CashierDTO cashier = cashierService.DTOgetCashierById(cashierId);
+        if (cashier == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(cashier);
     }
 
-    @PutMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/{cashierId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> updateProfile(
-            @PathVariable Long userId,
-            @RequestParam("username") String username,
+            @PathVariable Long cashierId,
+            @RequestParam("cashierName") String cashierName,
             @RequestParam("email") String email,
             @RequestParam("fullName") String fullName,
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage
     ) {
         try {
-            userService.updateUserProfile(userId, username, email, fullName, profileImage);
+            cashierService.updateCashierProfile(cashierId, cashierName, email, fullName, profileImage);
             return ResponseEntity.ok("Profile updated successfully");
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Failed to upload image");

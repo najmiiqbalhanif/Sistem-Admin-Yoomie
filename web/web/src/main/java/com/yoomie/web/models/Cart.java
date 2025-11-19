@@ -16,10 +16,10 @@ public class Cart extends BaseEntity {
     private double totalPrice;
 
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "cashier_id", nullable = false)
     @EqualsAndHashCode.Exclude // Mencegah infinite recursion
     @ToString.Exclude
-    private User user;
+    private Cashier cashier;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     @EqualsAndHashCode.Exclude // Mencegah infinite recursion

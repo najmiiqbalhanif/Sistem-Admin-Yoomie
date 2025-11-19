@@ -23,6 +23,6 @@ public class Payment extends BaseEntity {
     private List<PaymentItem> paymentItems;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "cashier_id")
+    private Cashier cashier;
 }

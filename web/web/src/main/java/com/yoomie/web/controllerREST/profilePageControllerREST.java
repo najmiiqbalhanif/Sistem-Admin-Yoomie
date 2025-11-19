@@ -1,7 +1,7 @@
 package com.yoomie.web.controllerREST;
 
-import com.yoomie.web.dto.UserDTO;
-import com.yoomie.web.services.UserService;
+import com.yoomie.web.dto.CashierDTO;
+import com.yoomie.web.services.CashierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,20 +11,20 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*") // Agar Flutter dapat mengakses (jika frontend dan backend terpisah)
 public class profilePageControllerREST {
 
-    private final UserService userService;
+    private final CashierService cashierService;
 
     @Autowired
-    public profilePageControllerREST(UserService userService) {
-        this.userService = userService;
+    public profilePageControllerREST(CashierService cashierService) {
+        this.cashierService = cashierService;
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserDTO> getProfileByUserId(@PathVariable Long userId) {
-        UserDTO user = userService.DTOgetUserById(userId);
-        if (user == null) {
+    @GetMapping("/{cashierId}")
+    public ResponseEntity<CashierDTO> getProfileByCashierId(@PathVariable Long cashierId) {
+        CashierDTO cashier = cashierService.DTOgetCashierById(cashierId);
+        if (cashier == null) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(cashier);
     }
 }

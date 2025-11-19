@@ -1,8 +1,8 @@
 package com.yoomie.web.controller;
 
-import com.yoomie.web.dto.UserDTO;
-import com.yoomie.web.models.User;
-import com.yoomie.web.services.UserService;
+import com.yoomie.web.dto.CashierDTO;
+import com.yoomie.web.models.Cashier;
+import com.yoomie.web.services.CashierService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,17 +17,17 @@ import javax.validation.Valid;
 @Controller
 public class loginRegisterController {
 
-    private final UserService userService;
+    private final CashierService cashierService;
 
     @Autowired
-    public loginRegisterController(UserService userService) {
-        this.userService = userService;
+    public loginRegisterController(CashierService cashierService) {
+        this.cashierService = cashierService;
     }
 
     @PostMapping("/register")
-    public @ResponseBody ResponseEntity<String> registerUser(@Valid @RequestBody UserDTO userDTO) {
-        userService.registerUser(userDTO);
-        return ResponseEntity.ok("User registered successfully");
+    public @ResponseBody ResponseEntity<String> registerCashier(@Valid @RequestBody CashierDTO cashierDTO) {
+        cashierService.registerCashier(cashierDTO);
+        return ResponseEntity.ok("Cashier registered successfully");
     }
 
     @GetMapping("/")
@@ -37,17 +37,17 @@ public class loginRegisterController {
 
 
     @PostMapping("/login")
-    public @ResponseBody ResponseEntity<String> loginUser(
-            @RequestBody UserDTO userDTO, HttpSession session) {
+    public @ResponseBody ResponseEntity<String> loginCashier(
+            @RequestBody CashierDTO cashierDTO, HttpSession session) {
 
         // Validasi email dan password
-        boolean isAuthenticated = userService.authenticateUser(userDTO.getEmail(), userDTO.getPassword());
+        boolean isAuthenticated = cashierService.authenticateCashier(cashierDTO.getEmail(), cashierDTO.getPassword());
         if (isAuthenticated) {
-            // Ambil user berdasarkan email
-            User user = userService.findByEmail(userDTO.getEmail());
-            if (user != null) {
-                // Simpan id user ke dalam session
-                session.setAttribute("userId", user.getId());
+            // Ambil cashier berdasarkan email
+            Cashier cashier = cashierService.findByEmail(cashierDTO.getEmail());
+            if (cashier != null) {
+                // Simpan id cashier ke dalam session
+                session.setAttribute("cashierId", cashier.getId());
                 return ResponseEntity.ok("Login successful");
             }
         }

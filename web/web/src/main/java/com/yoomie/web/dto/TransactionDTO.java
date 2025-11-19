@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TransactionDTO {
     private Long id;
-    private Long userId;
-    private String username; // Dari User
+    private Long cashierId;
+    private String cashierName; // Dari Cashier
     private String createdOn; // Tanggal transaction
     private String cartSummary; // Ringkasan produk di cart
     private double totalAmount; // Total harga

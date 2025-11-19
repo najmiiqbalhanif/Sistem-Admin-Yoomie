@@ -1,9 +1,9 @@
 package com.yoomie.web.controllerREST;
 
 import com.yoomie.web.dto.LoginResponseDTO;
-import com.yoomie.web.dto.UserDTO;
-import com.yoomie.web.models.User;
-import com.yoomie.web.services.UserService;
+import com.yoomie.web.dto.CashierDTO;
+import com.yoomie.web.models.Cashier;
+import com.yoomie.web.services.CashierService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,37 +14,37 @@ import javax.validation.Valid;
 @RequestMapping("/api/auth")
 public class loginRegisterControllerREST {
 
-    private final UserService userService;
+    private final CashierService cashierService;
 
-    public loginRegisterControllerREST(UserService userService) {
-        this.userService = userService;
+    public loginRegisterControllerREST(CashierService cashierService) {
+        this.cashierService = cashierService;
     }
 
     @PostMapping("/register")
-    public @ResponseBody ResponseEntity<String> registerUser(@Valid @RequestBody UserDTO userDTO) {
+    public @ResponseBody ResponseEntity<String> registerCashier(@Valid @RequestBody CashierDTO cashierDTO) {
         try {
-            userService.registerUserApp(userDTO);
-            return ResponseEntity.ok("User registered successfully: ");
+            cashierService.registerCashierApp(cashierDTO);
+            return ResponseEntity.ok("Cashier registered successfully: ");
         } catch (IllegalStateException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody UserDTO userDTO, HttpSession session) {
-        boolean isAuthenticated = userService.authenticateUser(userDTO.getEmail(), userDTO.getPassword());
+    public ResponseEntity<?> loginCashier(@RequestBody CashierDTO cashierDTO, HttpSession session) {
+        boolean isAuthenticated = cashierService.authenticateCashier(cashierDTO.getEmail(), cashierDTO.getPassword());
         if (isAuthenticated) {
-            User user = userService.findByEmail(userDTO.getEmail());
-            if (user != null) {
-                session.setAttribute("userId", user.getId());
+            Cashier cashier = cashierService.findByEmail(cashierDTO.getEmail());
+            if (cashier != null) {
+                session.setAttribute("cashierId", cashier.getId());
 
                 // Buat DTO untuk response
                 LoginResponseDTO loginResponse = new LoginResponseDTO(
-                        user.getId(),
-                        user.getUsername(),
-                        user.getEmail(),
-                        user.getFullName(),
-                        user.getProfileImage()
+                        cashier.getId(),
+                        cashier.getCashierName(),
+                        cashier.getEmail(),
+                        cashier.getFullName(),
+                        cashier.getProfileImage()
                 );
 
                 return ResponseEntity.ok(loginResponse);
@@ -55,8 +55,8 @@ public class loginRegisterControllerREST {
 
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutUser(HttpSession session) {
+    public ResponseEntity<?> logoutCashier(HttpSession session) {
         session.invalidate();
-        return ResponseEntity.ok("User logged out successfully");
+        return ResponseEntity.ok("Cashier logged out successfully");
     }
 }

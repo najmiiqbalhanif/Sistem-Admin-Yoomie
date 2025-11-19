@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 public class LoginResponseDTO {
     private Long id;
-    private String username;
+    private String cashierName;
     private String email;
     private String fullName;
     private String profileImage;

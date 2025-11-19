@@ -2,12 +2,12 @@ package com.yoomie.web.services.impl;
 
 import com.yoomie.web.models.Cart;
 import com.yoomie.web.models.CartItem;
+import com.yoomie.web.models.Cashier;
 import com.yoomie.web.models.Product;
-import com.yoomie.web.models.User;
 import com.yoomie.web.repositories.CartItemRepository;
 import com.yoomie.web.repositories.CartRepository;
 import com.yoomie.web.repositories.ProductRepository;
-import com.yoomie.web.repositories.UserRepository;
+import com.yoomie.web.repositories.CashierRepository;
 import com.yoomie.web.services.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,16 +22,16 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
+    private final CashierRepository cashierRepository;
 
     @Override
-    public Cart getCartByUserId(Long userId) {
-        return cartRepository.findByUserId(userId);
+    public Cart getCartByCashierId(Long cashierId) {
+        return cartRepository.findByCashierId(cashierId);
     }
 
     @Override
-    public List<CartItem> getCartItemsByUserId(Long userId) {
-        Cart cart = cartRepository.findByUserId(userId);
+    public List<CartItem> getCartItemsByCashierId(Long cashierId) {
+        Cart cart = cartRepository.findByCashierId(cashierId);
         if (cart == null) {
             // Jika Cart tidak ditemukan, kembalikan daftar kosong
             return List.of();
@@ -41,14 +41,14 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional // Pastikan ini ada karena ada modifikasi database
-    public void addToCart(Long userId, Long productId) {
-        Cart cart = cartRepository.findByUserId(userId);
+    public void addToCart(Long cashierId, Long productId) {
+        Cart cart = cartRepository.findByCashierId(cashierId);
 
         if (cart == null) {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+            Cashier cashier = cashierRepository.findById(cashierId)
+                    .orElseThrow(() -> new IllegalArgumentException("Cashier not found with ID: " + cashierId));
             cart = new Cart();
-            cart.setUser(user);
+            cart.setCashier(cashier);
             cart = cartRepository.save(cart);
         }
 
@@ -83,10 +83,10 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public void decreaseProductQuantity(Long userId, Long productId) {
-        Cart cart = cartRepository.findByUserId(userId);
+    public void decreaseProductQuantity(Long cashierId, Long productId) {
+        Cart cart = cartRepository.findByCashierId(cashierId);
         if (cart == null) {
-            throw new IllegalArgumentException("Cart not found for user ID: " + userId);
+            throw new IllegalArgumentException("Cart not found for cashier ID: " + cashierId);
         }
 
         Optional<CartItem> optionalCartItem = cart.getCartItems().stream()
@@ -101,21 +101,21 @@ public class CartServiceImpl implements CartService {
                 cartItemRepository.save(cartItem);
             } else {
                 // Jika kuantitas menjadi 1 dan dikurangi, hapus item dari keranjang
-                removeProductFromCart(userId, productId);
+                removeProductFromCart(cashierId, productId);
                 return; // Keluar dari method setelah penghapusan
             }
             recalculateCartTotalPrice(cart); // Hitung ulang total harga setelah perubahan
         } else {
-            throw new IllegalArgumentException("Product with ID " + productId + " not found in cart for user " + userId);
+            throw new IllegalArgumentException("Product with ID " + productId + " not found in cart for cashier " + cashierId);
         }
     }
 
     @Override
     @Transactional
-    public void removeProductFromCart(Long userId, Long productId) {
-        Cart cart = cartRepository.findByUserId(userId);
+    public void removeProductFromCart(Long cashierId, Long productId) {
+        Cart cart = cartRepository.findByCashierId(cashierId);
         if (cart == null) {
-            throw new IllegalArgumentException("Cart not found for user ID: " + userId);
+            throw new IllegalArgumentException("Cart not found for cashier ID: " + cashierId);
         }
 
         Optional<CartItem> optionalCartItem = cart.getCartItems().stream()
@@ -129,20 +129,20 @@ public class CartServiceImpl implements CartService {
             // cartRepository.save(cart); // Tidak perlu save cart karena @Transactional akan otomatis sinkron
             recalculateCartTotalPrice(cart); // Hitung ulang total harga setelah penghapusan
         } else {
-            throw new IllegalArgumentException("Product with ID " + productId + " not found in cart for user " + userId);
+            throw new IllegalArgumentException("Product with ID " + productId + " not found in cart for cashier " + cashierId);
         }
     }
 
     @Override
     @Transactional
-    public void updateProductQuantity(Long userId, Long productId, int newQuantity) {
+    public void updateProductQuantity(Long cashierId, Long productId, int newQuantity) {
         if (newQuantity < 0) {
             throw new IllegalArgumentException("Quantity cannot be negative.");
         }
 
-        Cart cart = cartRepository.findByUserId(userId);
+        Cart cart = cartRepository.findByCashierId(cashierId);
         if (cart == null) {
-            throw new IllegalArgumentException("Cart not found for user ID: " + userId);
+            throw new IllegalArgumentException("Cart not found for cashier ID: " + cashierId);
         }
 
         Optional<CartItem> optionalCartItem = cart.getCartItems().stream()
@@ -153,7 +153,7 @@ public class CartServiceImpl implements CartService {
             CartItem cartItem = optionalCartItem.get();
             if (newQuantity == 0) {
                 // Jika quantity diupdate menjadi 0, hapus item
-                removeProductFromCart(userId, productId);
+                removeProductFromCart(cashierId, productId);
             } else {
                 // Perbarui kuantitas dan subTotal
                 cartItem.setQuantity(newQuantity);
@@ -165,7 +165,7 @@ public class CartServiceImpl implements CartService {
             // Jika produk tidak ditemukan di keranjang dan newQuantity > 0, mungkin ingin menambahkannya
             // Namun, untuk kasus update, kita asumsikan produk sudah ada.
             if (newQuantity > 0) {
-                throw new IllegalArgumentException("Product with ID " + productId + " not found in cart for user " + userId + ". Cannot update quantity.");
+                throw new IllegalArgumentException("Product with ID " + productId + " not found in cart for cashier " + cashierId + ". Cannot update quantity.");
             }
             // Jika newQuantity == 0 dan produk tidak ada, tidak perlu melakukan apa-apa (sudah seperti dihapus)
         }
@@ -175,8 +175,8 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public void clearCart(Long userId) {
-        Cart cart = cartRepository.findByUserId(userId);
+    public void clearCart(Long cashierId) {
+        Cart cart = cartRepository.findByCashierId(cashierId);
         if (cart != null) {
             // Hapus semua CartItem yang terkait dengan Cart ini
             cartItemRepository.deleteAll(cart.getCartItems()); // Gunakan deleteAll(Iterable)

@@ -5,9 +5,9 @@ import com.yoomie.web.dto.PaymentDTO;
 import com.yoomie.web.dto.PaymentItemDTO;
 import com.yoomie.web.models.Transaction;
 import com.yoomie.web.models.Payment;
-import com.yoomie.web.models.User;
+import com.yoomie.web.models.Cashier;
 import com.yoomie.web.services.TransactionService;
-import com.yoomie.web.services.UserService;
+import com.yoomie.web.services.CashierService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class paymentControllerREST { // Atau rename menjadi TransactionControllerREST jika lebih sesuai
     private final TransactionService transactionService;
-    private final UserService userService;
+    private final CashierService cashierService;
 
-    public paymentControllerREST(TransactionService transactionService, UserService userService) {
+    public paymentControllerREST(TransactionService transactionService, CashierService cashierService) {
         this.transactionService = transactionService;
-        this.userService = userService;
+        this.cashierService = cashierService;
     }
 
     public static class CheckoutPaymentRequest extends PaymentDTO {
@@ -40,9 +40,9 @@ public class paymentControllerREST { // Atau rename menjadi TransactionControlle
 
     @PostMapping("/checkoutpayment/submit")
     public ResponseEntity<?> submitCheckout(@RequestBody CheckoutPaymentRequest request) {
-        User user = userService.getUserById(request.getUserId());
-        if (user == null) {
-            return ResponseEntity.badRequest().body("User not found");
+        Cashier cashier = cashierService.getCashierById(request.getCashierId());
+        if (cashier == null) {
+            return ResponseEntity.badRequest().body("Cashier not found");
         }
 
         Payment payment = new Payment();
@@ -52,7 +52,7 @@ public class paymentControllerREST { // Atau rename menjadi TransactionControlle
         payment.setStatus("Paid"); // Status awal mungkin PENDING, Paid, etc. Sesuaikan dengan logika Anda.
 
         try {
-            Transaction transaction = transactionService.processCheckout(user, payment, request.getPaymentItems());
+            Transaction transaction = transactionService.processCheckout(cashier, payment, request.getPaymentItems());
             return ResponseEntity.ok(transaction);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to process checkout: " + e.getMessage());
@@ -66,16 +66,16 @@ public class paymentControllerREST { // Atau rename menjadi TransactionControlle
         return ResponseEntity.ok(transactions);
     }
 
-    // --- NEW: Endpoint untuk mendapatkan transaction berdasarkan user ID (lebih relevan untuk aplikasi user) ---
-    @GetMapping("/transactions/user/{userId}")
-    public ResponseEntity<List<TransactionDTO>> getTransactionsByUserId(@PathVariable Long userId) {
-        List<Transaction> transactions = transactionService.getTransactionsByUserId(userId);
+    // --- NEW: Endpoint untuk mendapatkan transaction berdasarkan cashier ID (lebih relevan untuk aplikasi cashier) ---
+    @GetMapping("/transactions/cashier/{cashierId}")
+    public ResponseEntity<List<TransactionDTO>> getTransactionsByCashierId(@PathVariable Long cashierId) {
+        List<Transaction> transactions = transactionService.getTransactionsByCashierId(cashierId);
         List<TransactionDTO> transactionDTOs = transactions.stream()
                 .map(transaction -> {
                     return TransactionDTO.builder()
                             .id(transaction.getId())
-                            .userId(transaction.getUser().getId())
-                            .username(transaction.getUser().getUsername())
+                            .cashierId(transaction.getCashier().getId())
+                            .cashierName(transaction.getCashier().getCashierName())
                             .createdOn(transaction.getPayment().getCreatedOn().toString())
                             .cartSummary(transaction.getPayment().getPaymentItems().stream()
                                     .map(item -> item.getProductName() + " x " + item.getQuantity())
