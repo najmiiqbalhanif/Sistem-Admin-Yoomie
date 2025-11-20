@@ -1,62 +1,62 @@
 package com.yoomie.web.controller;
 
-import com.yoomie.web.dto.CashierDTO;
-import com.yoomie.web.models.Cashier;
-import com.yoomie.web.services.CashierService;
+import com.yoomie.web.dto.AdminDTO;
+import com.yoomie.web.models.Admin;
+import com.yoomie.web.services.AdminService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @Controller
 public class loginRegisterController {
 
-    private final CashierService cashierService;
+    private final AdminService adminService;
 
     @Autowired
-    public loginRegisterController(CashierService cashierService) {
-        this.cashierService = cashierService;
+    public loginRegisterController(AdminService adminService) {
+        this.adminService = adminService;
     }
 
+    // REGISTER ADMIN
     @PostMapping("/register")
-    public @ResponseBody ResponseEntity<String> registerCashier(@Valid @RequestBody CashierDTO cashierDTO) {
-        cashierService.registerCashier(cashierDTO);
-        return ResponseEntity.ok("Cashier registered successfully");
+    public @ResponseBody ResponseEntity<String> registerAdmin(@Valid @RequestBody AdminDTO adminDTO) {
+        adminService.registerAdmin(adminDTO);
+        return ResponseEntity.ok("Admin registered successfully");
     }
 
+    // Tampilkan halaman register (root diarahkan ke register admin)
     @GetMapping("/")
     public String showRegisterPage() {
         return "register";
     }
 
-
+    // LOGIN ADMIN
     @PostMapping("/login")
-    public @ResponseBody ResponseEntity<String> loginCashier(
-            @RequestBody CashierDTO cashierDTO, HttpSession session) {
+    public @ResponseBody ResponseEntity<String> loginAdmin(
+            @RequestBody AdminDTO adminDTO, HttpSession session) {
 
-        // Validasi email dan password
-        boolean isAuthenticated = cashierService.authenticateCashier(cashierDTO.getEmail(), cashierDTO.getPassword());
+        boolean isAuthenticated = adminService.authenticateAdmin(
+                adminDTO.getEmail(),
+                adminDTO.getPassword()
+        );
+
         if (isAuthenticated) {
-            // Ambil cashier berdasarkan email
-            Cashier cashier = cashierService.findByEmail(cashierDTO.getEmail());
-            if (cashier != null) {
-                // Simpan id cashier ke dalam session
-                session.setAttribute("cashierId", cashier.getId());
+            Admin admin = adminService.findByEmail(adminDTO.getEmail());
+            if (admin != null) {
+                // Simpan id admin ke dalam session
+                session.setAttribute("adminId", admin.getId());
                 return ResponseEntity.ok("Login successful");
             }
         }
         return ResponseEntity.status(401).body("Invalid email or password");
     }
 
-
-
-    @GetMapping("login")
+    // Halaman login admin
+    @GetMapping("/login")
     public String login() {
         return "login";
     }

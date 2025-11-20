@@ -5,6 +5,7 @@ import com.yoomie.web.dto.PaymentItemDTO;
 import com.yoomie.web.models.Payment;
 import com.yoomie.web.models.Product;
 import com.yoomie.web.services.*;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,14 @@ public class dashboardController {
     }
 
     @GetMapping("/A_dashboard")
-    public String showDashboard(Model model) {
+    public String showDashboard(HttpSession session, Model model) {
+        // AMBIL ADMIN ID DARI SESSION
+        Long adminId = (Long) session.getAttribute("adminId");
+        if (adminId == null) {
+            // BELUM LOGIN → ARAHKAN KE LOGIN
+            return "redirect:/login";
+        }
+
         // Untuk Tampilkan Transaction
         List<TransactionDTO> transactions = transactionService.getAllTransactions(); // Jika semua, buat query tambahan
         model.addAttribute("transactions", transactions);
