@@ -14,8 +14,6 @@ public interface TransactionService {
 
     public List<Transaction> getTransactionsByCashierId(Long cashierId);
 
-    public void updateTransactionStatus(Long transactionId, String newStatus);
-
     public Transaction saveTransaction(Transaction transaction);
 
     public Transaction processCheckout(Cashier cashier, Payment payment, List<PaymentItemDTO> paymentItems);

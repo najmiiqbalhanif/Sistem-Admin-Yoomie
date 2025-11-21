@@ -45,18 +45,6 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    @Transactional
-    public void updateTransactionStatus(Long transactionId, String newStatus) {
-        Transaction transaction = orderRepository.findById(transactionId)
-                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
-
-        Payment payment = transaction.getPayment();
-        if (payment != null) {
-            payment.setStatus(newStatus);
-        }
-    }
-
-    @Override
     public Transaction saveTransaction(Transaction transaction) {
         return orderRepository.save(transaction);
     }
@@ -72,14 +60,11 @@ public class TransactionServiceImpl implements TransactionService {
                         .collect(Collectors.joining(", ")))
                 .totalAmount(transaction.getPayment().getTotalAmount())
                 .paymentMethod(transaction.getPayment().getPaymentMethod())
-                .paymentStatus(transaction.getPayment().getStatus())
-                .address(transaction.getPayment().getAddress())
                 .build();
     }
 
     @Transactional
     public Transaction processCheckout(Cashier cashier, Payment payment, List<PaymentItemDTO> paymentItems) {
-        payment.setStatus("PENDING");
         payment = paymentRepository.save(payment);
 
         Transaction transaction = new Transaction();

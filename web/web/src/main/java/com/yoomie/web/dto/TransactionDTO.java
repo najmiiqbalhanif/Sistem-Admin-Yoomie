@@ -17,6 +17,4 @@ public class TransactionDTO {
     private String cartSummary; // Ringkasan produk di cart
     private double totalAmount; // Total harga
     private String paymentMethod; // Metode pembayaran
-    private String paymentStatus; // Status pembayaran
-    private String address; // Alamat dari pembayaran
 }

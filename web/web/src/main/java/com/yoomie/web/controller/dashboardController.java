@@ -6,7 +6,6 @@ import com.yoomie.web.models.Payment;
 import com.yoomie.web.models.Product;
 import com.yoomie.web.services.*;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
@@ -14,7 +13,6 @@ import com.yoomie.web.dto.ProductDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -98,18 +96,6 @@ public class dashboardController {
                         item.getSubTotal()
                 ))
                 .toList();
-    }
-
-    @PutMapping("/A_dashboard/updateStatus/{transactionId}")
-    public ResponseEntity<String> updateStatus(@PathVariable Long transactionId, @RequestBody Map<String, String> payload) {
-        String newStatus = payload.get("status");
-
-        if (!"paid".equals(newStatus) && !"on process".equals(newStatus)) {
-            return ResponseEntity.badRequest().body("Invalid status value");
-        }
-
-        transactionService.updateTransactionStatus(transactionId, newStatus);
-        return ResponseEntity.ok("Status updated successfully");
     }
 
     // Controller untuk Halaman Library
