@@ -42,30 +42,24 @@
                 <!-- Sales Summary -->
                 <h4>Sales Summary</h4>
                 <div class="row g-3 mb-4">
-                    <!-- Gross Sales -->
-                    <div class="col-md-4">
+                    <!-- Sales (Today) -->
+                    <div class="col-md-6">
                         <div class="card" style="background-color: #0b4575">
                             <div class="card-content">
-                                <h5>Gross Sales</h5>
-                                <h3>Rp. 100.000.000</h3>
+                                <h5>Sales</h5>
+                                <!-- Tampilkan total sales hari ini -->
+                                <h3 th:text="${'Rp ' + #numbers.formatInteger(todaySales.intValue(), 1, 'POINT')}"></h3>
                             </div>
                         </div>
                     </div>
-                    <!-- Net Sales -->
-                    <div class="col-md-4">
+
+                    <!-- Transactions (Today) -->
+                    <div class="col-md-6">
                         <div class="card" style="background-color: #0b4575">
                             <div class="card-content">
-                                <h5>Net Sales</h5>
-                                <h3>Rp. 90.000.000</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Transaction -->
-                    <div class="col-md-4">
-                        <div class="card" style="background-color: #0b4575">
-                            <div class="card-content">
-                                <h5>Transaction</h5>
-                                <h3>576</h3>
+                                <h5>Transactions</h5>
+                                <!-- Tampilkan jumlah transaksi hari ini -->
+                                <h3 th:text="${todayTransactionCount}">0</h3>
                             </div>
                         </div>
                     </div>

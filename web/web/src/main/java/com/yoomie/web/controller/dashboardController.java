@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Controller
 public class dashboardController {
@@ -44,6 +46,34 @@ public class dashboardController {
         // Untuk Tampilkan Transaction
         List<TransactionDTO> transactions = transactionService.getAllTransactions(); // Jika semua, buat query tambahan
         model.addAttribute("transactions", transactions);
+
+        // ----------------------------
+        // HITUNG SALES & TRANSACTION HARI INI
+        // ----------------------------
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
+
+        double todaySales = transactions.stream()
+                .filter(t -> {
+                    String createdOnStr = t.getCreatedOn(); // contoh: "2025-11-21T10:15:30"
+                    if (createdOnStr == null || createdOnStr.length() < 10) return false;
+                    LocalDate txDate = LocalDate.parse(createdOnStr.substring(0, 10), dateFormatter);
+                    return txDate.equals(today);
+                })
+                .mapToDouble(TransactionDTO::getTotalAmount)
+                .sum();
+
+        long todayTransactionCount = transactions.stream()
+                .filter(t -> {
+                    String createdOnStr = t.getCreatedOn();
+                    if (createdOnStr == null || createdOnStr.length() < 10) return false;
+                    LocalDate txDate = LocalDate.parse(createdOnStr.substring(0, 10), dateFormatter);
+                    return txDate.equals(today);
+                })
+                .count();
+
+        model.addAttribute("todaySales", todaySales);
+        model.addAttribute("todayTransactionCount", todayTransactionCount);
 
         // Untuk Tampilkan Product di Library
         List<ProductDTO> products = productService.getAllProducts();
