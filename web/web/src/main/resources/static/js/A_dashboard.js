@@ -157,3 +157,30 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Toggle dropdown user di topbar
+    const userToggle = document.querySelector('.topbar-user');
+
+    if (userToggle) {
+        const userMenu = userToggle.querySelector('.topbar-user-menu');
+
+        // klik avatar/nama → buka/tutup
+        userToggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            userToggle.classList.toggle('open');
+        });
+
+        // biar klik di dalam menu gak nutup
+        if (userMenu) {
+            userMenu.addEventListener('click', function (e) {
+                e.stopPropagation();
+            });
+        }
+
+        // klik di luar → tutup
+        document.addEventListener('click', function () {
+            userToggle.classList.remove('open');
+        });
+    }
+});
