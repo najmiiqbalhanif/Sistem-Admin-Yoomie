@@ -13,6 +13,5 @@ public class PaymentDTO {
     private Long cashierId;
     private String cashierName;
     private String paymentMethod;
-    private String address;
     private Double totalAmount;
 }

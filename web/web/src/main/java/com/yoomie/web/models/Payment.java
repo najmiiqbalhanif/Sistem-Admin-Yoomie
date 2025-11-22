@@ -13,11 +13,7 @@ import java.util.List;
 @Table(name = "payments")
 public class Payment extends BaseEntity {
     private String paymentMethod;
-    private String address;
     private double totalAmount;
-
-    @Builder.Default
-    private String status = "paid";
 
     @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL)
     private List<PaymentItem> paymentItems;

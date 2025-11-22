@@ -46,10 +46,8 @@ public class paymentControllerREST { // Atau rename menjadi TransactionControlle
         }
 
         Payment payment = new Payment();
-        payment.setAddress(request.getAddress());
         payment.setPaymentMethod(request.getPaymentMethod());
         payment.setTotalAmount(request.getTotalAmount());
-        payment.setStatus("Paid"); // Status awal mungkin PENDING, Paid, etc. Sesuaikan dengan logika Anda.
 
         try {
             Transaction transaction = transactionService.processCheckout(cashier, payment, request.getPaymentItems());
@@ -82,8 +80,6 @@ public class paymentControllerREST { // Atau rename menjadi TransactionControlle
                                     .collect(Collectors.joining(", ")))
                             .totalAmount(transaction.getPayment().getTotalAmount())
                             .paymentMethod(transaction.getPayment().getPaymentMethod())
-                            .paymentStatus(transaction.getPayment().getStatus())
-                            .address(transaction.getPayment().getAddress())
                             .build();
                 })
                 .collect(Collectors.toList());

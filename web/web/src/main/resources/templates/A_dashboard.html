@@ -234,8 +234,6 @@
                                 <th>Cart</th>
                                 <th>Amount</th>
                                 <th>Payment Method</th>
-                                <th>Status</th>
-                                <th>Address</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -254,19 +252,6 @@
                                 </td>
                                 <td th:text="${transaction.getTotalAmount()}"></td>
                                 <td th:text="${transaction.getPaymentMethod()}"></td>
-                                <td>
-                                    <select class="form-select status-dropdown"
-                                            th:data-transaction-id="${transaction.getId()}"
-                                            th:value="${transaction.getPaymentStatus()}">
-                                        <option value="paid"
-                                                th:selected="${transaction.paymentStatus == 'paid'}">Paid
-                                        </option>
-                                        <option value="on process"
-                                                th:selected="${transaction.paymentStatus == 'on process'}">On Process
-                                        </option>
-                                    </select>
-                                </td>
-                                <td th:text="${transaction.getAddress()}"></td>
                                 <td>
                                     <!-- contoh placeholder (sesuaikan dengan data yang benar jika perlu) -->
                                     <button class="btn btn-light btn-sm">Details</button>
