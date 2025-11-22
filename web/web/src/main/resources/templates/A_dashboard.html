@@ -287,14 +287,22 @@
                     <h2 class="page-title">Library</h2>
                     <p class="page-subtitle">Kelola produk yang tersedia di toko.</p>
                 </div>
+
                 <div class="page-actions">
+                    <!-- SEARCH -->
+                    <div class="library-search">
+                        <input type="text"
+                               id="librarySearchInput"
+                               placeholder="Search by name...">
+                    </div>
+
+                    <!-- BUTTON ADD -->
                     <button type="button" class="btn btn-primary-soft"
                             data-bs-toggle="modal" data-bs-target="#addProductModal">
                         + Add New Product
                     </button>
                 </div>
             </header>
-
             <!-- Modal Add New Product -->
             <div class="modal fade" id="addProductModal" tabindex="-1"
                  aria-labelledby="addProductModalLabel" aria-hidden="true">
@@ -409,7 +417,7 @@
             <section class="dashboard-section">
                 <div class="card-panel">
                     <div class="card-panel-body table-responsive">
-                        <table class="table table-borderless dashboard-table">
+                        <table class="table table-borderless dashboard-table" id="libraryTable">
                             <thead>
                             <tr>
                                 <th>Name</th>

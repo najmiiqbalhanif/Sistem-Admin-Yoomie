@@ -242,6 +242,46 @@
     gap: 0.5rem;
 }
 
+.page-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* SEARCH DI LIBRARY */
+.library-search {
+    position: relative;
+}
+
+.library-search input {
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    padding: 0.45rem 0.9rem;
+    padding-left: 2.1rem;                  /* ruang buat icon */
+    font-size: 0.9rem;
+    background: #f9fafb;
+    min-width: 220px;
+}
+
+.library-search input:focus {
+    outline: none;
+    border-color: #0b4575;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(11, 69, 117, 0.12);
+}
+
+/* icon search kecil di dalam input (opsional) */
+.library-search::before {
+    content: "🔍";
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.9rem;
+    opacity: 0.6;
+}
+
+
 /* CONTENT SWITCHING */
 .content-dashboard {
     display: none;

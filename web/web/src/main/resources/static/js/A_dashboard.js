@@ -184,3 +184,32 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    // SEARCH LIBRARY
+    const searchInput = document.getElementById('librarySearchInput');
+    const libraryTable = document.getElementById('libraryTable');
+
+    if (searchInput && libraryTable) {
+        const rows = libraryTable.querySelectorAll('tbody tr');
+
+        searchInput.addEventListener('input', function () {
+            const query = this.value.trim().toLowerCase();
+
+            rows.forEach(function (row) {
+                const nameCell = row.querySelector('td:nth-child(1)'); // kolom Name
+                if (!nameCell) return;
+
+                const nameText = nameCell.textContent.toLowerCase();
+
+                // contains match (substring, case-insensitive)
+                if (query === '' || nameText.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+});
