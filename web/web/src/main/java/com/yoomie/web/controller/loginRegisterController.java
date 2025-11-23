@@ -60,4 +60,14 @@ public class loginRegisterController {
     public String login() {
         return "login";
     }
+
+    // LOGOUT ADMIN
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        // Hapus semua data di session
+        session.invalidate();
+
+        // Arahkan kembali ke halaman login
+        return "redirect:/login";
+    }
 }
