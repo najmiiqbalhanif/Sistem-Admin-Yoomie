@@ -16,4 +16,6 @@ public interface AdminService {
     AdminDTO DTOgetAdminById(Long id);
 
     void updateAdminProfile(Long id, AdminDTO dto);
+
+    void changePassword(Long id, String currentPassword, String newPassword);
 }

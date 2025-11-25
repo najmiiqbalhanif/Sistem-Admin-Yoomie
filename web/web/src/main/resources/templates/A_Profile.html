@@ -76,8 +76,6 @@
         </button>
 
         <div class="topbar-user" id="topbarUser">
-          <!-- inisial admin, nanti bisa diisi dari backend -->
-          <div class="topbar-avatar" th:text="${adminInitials}">NI</div>
           <div class="topbar-user-text">
             <span class="topbar-user-name" th:text="${admin.fullName}">Najmi Hanif</span>
             <span class="topbar-user-role">Admin</span>
@@ -121,19 +119,19 @@
           <p class="profile-email" th:text="${admin.email}">admin@tokoanda.com</p>
         </div>
 
-        <!-- Bagian kanan: form (sementara untuk tampilan saja) -->
         <div class="profile-right">
           <form class="profile-form"
                 th:action="@{/profile}"
                 th:object="${admin}"
                 method="post">
-          <div class="mb-3">
+
+            <div class="mb-3">
               <label class="form-label profile-label" for="fullName">Full Name</label>
               <input type="text"
                      id="fullName"
                      class="form-control profile-input"
                      placeholder="Your full name"
-                     th:field="${admin.fullName}">
+                     th:field="*{fullName}">
             </div>
 
             <div class="mb-3">
@@ -142,7 +140,7 @@
                      id="adminName"
                      class="form-control profile-input"
                      placeholder="Admin username"
-                     th:field="${admin.adminName}">
+                     th:field="*{adminName}">
             </div>
 
             <div class="mb-3">
@@ -151,10 +149,16 @@
                      id="email"
                      class="form-control profile-input"
                      placeholder="admin@tokoanda.com"
-                     th:field="${admin.email}">
+                     th:field="*{email}">
             </div>
 
-            <!-- nanti mau tambah "Change Password" bisa di bawah ini -->
+            <div class="mb-3">
+              <label class="form-label profile-label" for="password">Password</label>
+              <input type="text"
+                     id="password"
+                     class="form-control profile-input"
+                     th:field="*{password}">
+            </div>
 
             <div class="d-flex justify-content-end gap-2 mt-3">
               <a href="/A_dashboard" class="btn btn-outline-secondary">Cancel</a>

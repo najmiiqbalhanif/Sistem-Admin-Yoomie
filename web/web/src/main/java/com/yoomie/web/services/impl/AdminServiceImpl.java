@@ -62,6 +62,8 @@
             admin.setFullName(dto.getFullName());
             admin.setAdminName(dto.getAdminName());
             admin.setEmail(dto.getEmail());
+            admin.setPassword(dto.getPassword());
+
             adminRepository.save(admin);
         }
 
@@ -80,5 +82,21 @@
                     .password(admin.getPassword())
                     .fullName(admin.getFullName())
                     .build();
+        }
+
+        @Override
+        public void changePassword(Long id, String currentPassword, String newPassword) {
+            Admin admin = adminRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("Admin not found with id: " + id));
+
+            // Cek password lama dengan perbandingan biasa
+            if (admin.getPassword() == null || !admin.getPassword().equals(currentPassword)) {
+                throw new IllegalArgumentException("Current password is incorrect.");
+            }
+
+            // Set password baru apa adanya (plain text)
+            admin.setPassword(newPassword);
+
+            adminRepository.save(admin);
         }
     }

@@ -21,18 +21,13 @@ public class profileController {
 
     @GetMapping("/profile")
     public String showProfile(HttpSession session, Model model) {
-        // Ambil adminId dari session (harusnya sudah di-set saat login)
         Long adminId = (Long) session.getAttribute("adminId");
         if (adminId == null) {
             return "redirect:/login";
         }
 
-        // Ambil data admin asli dari DB via service
-        Admin admin = adminService.getAdminById(adminId);
-        if (admin == null) {
-            // safety net kalau id di session sudah tidak valid
-            return "redirect:/login";
-        }
+        // Ambil DTO, bukan entity langsung
+        AdminDTO admin = adminService.DTOgetAdminById(adminId);
 
         model.addAttribute("admin", admin);
 
@@ -48,10 +43,9 @@ public class profileController {
             return "redirect:/login";
         }
 
-        // Simpan perubahan profile (fullName, adminName, email)
+        // Simpan perubahan profile (fullName, adminName, email, password)
         adminService.updateAdminProfile(adminId, formAdmin);
 
-        // Setelah update, reload halaman profile
         return "redirect:/profile";
     }
 }
