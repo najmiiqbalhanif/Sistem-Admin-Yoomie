@@ -14,4 +14,6 @@ public interface AdminService {
     Admin getAdminById(Long id);
 
     AdminDTO DTOgetAdminById(Long id);
+
+    void updateAdminProfile(Long id, AdminDTO dto);
 }

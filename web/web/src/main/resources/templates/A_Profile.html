@@ -123,16 +123,17 @@
 
         <!-- Bagian kanan: form (sementara untuk tampilan saja) -->
         <div class="profile-right">
-          <!-- Untuk sekarang form ini hanya front-end,
-               temanmu bisa nanti tambahkan th:action & POST -->
-          <form class="profile-form">
-            <div class="mb-3">
+          <form class="profile-form"
+                th:action="@{/profile}"
+                th:object="${admin}"
+                method="post">
+          <div class="mb-3">
               <label class="form-label profile-label" for="fullName">Full Name</label>
               <input type="text"
                      id="fullName"
                      class="form-control profile-input"
                      placeholder="Your full name"
-                     th:value="${admin.fullName}">
+                     th:field="${admin.fullName}">
             </div>
 
             <div class="mb-3">
@@ -141,7 +142,7 @@
                      id="adminName"
                      class="form-control profile-input"
                      placeholder="Admin username"
-                     th:value="${admin.adminName}">
+                     th:field="${admin.adminName}">
             </div>
 
             <div class="mb-3">
@@ -150,14 +151,14 @@
                      id="email"
                      class="form-control profile-input"
                      placeholder="admin@tokoanda.com"
-                     th:value="${admin.email}">
+                     th:field="${admin.email}">
             </div>
 
             <!-- nanti mau tambah "Change Password" bisa di bawah ini -->
 
             <div class="d-flex justify-content-end gap-2 mt-3">
               <a href="/A_dashboard" class="btn btn-outline-secondary">Cancel</a>
-              <button type="button" class="btn btn-primary-soft">
+              <button type="submit" class="btn btn-primary-soft">
                 Save Changes
               </button>
             </div>

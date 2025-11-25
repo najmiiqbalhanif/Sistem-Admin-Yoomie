@@ -2,6 +2,7 @@ package com.yoomie.web.controller;
 
 import com.yoomie.web.dto.TransactionDTO;
 import com.yoomie.web.dto.PaymentItemDTO;
+import com.yoomie.web.models.Admin;
 import com.yoomie.web.models.Payment;
 import com.yoomie.web.models.Product;
 import com.yoomie.web.services.*;
@@ -23,13 +24,15 @@ public class dashboardController {
     private final CashierService cashierService;
     private final CartService cartService;
     private final PaymentService paymentService;
+    private final AdminService adminService;
 
-    public dashboardController(ProductService productService, TransactionService transactionService, CashierService cashierService, CartService cartService, PaymentService paymentService) {
+    public dashboardController(ProductService productService, TransactionService transactionService, CashierService cashierService, CartService cartService, PaymentService paymentService, AdminService adminService) {
         this.productService = productService;
         this.transactionService = transactionService;
         this.cashierService = cashierService;
         this.cartService = cartService;
         this.paymentService = paymentService;
+        this.adminService = adminService;
     }
 
     @GetMapping("/A_dashboard")
@@ -39,6 +42,11 @@ public class dashboardController {
         if (adminId == null) {
             // BELUM LOGIN → ARAHKAN KE LOGIN
             return "redirect:/login";
+        }
+
+        Admin admin = adminService.getAdminById(adminId);
+        if (admin != null) {
+            model.addAttribute("fullName", admin.getFullName());
         }
 
         // Untuk Tampilkan Transaction
@@ -115,7 +123,7 @@ public class dashboardController {
         }
 
         // Redirect kembali ke halaman library
-        return "redirect:/A_dashboard";
+        return "redirect:/A_dashboard?section=library";
     }
 
     @GetMapping("/A_dashboard/getProd/{id}")
@@ -147,13 +155,13 @@ public class dashboardController {
         }
 
         // Redirect kembali ke halaman library
-        return "redirect:/A_dashboard";
+        return "redirect:/A_dashboard?section=library";
     }
 
     @PostMapping("/A_dashboard/delProd/{id}")
     public String deleteProduct(@PathVariable Long id) {
         productService.deleteProductById(id);
 
-        return "redirect:/A_dashboard";
+        return "redirect:/A_dashboard?section=library";
     }
 }

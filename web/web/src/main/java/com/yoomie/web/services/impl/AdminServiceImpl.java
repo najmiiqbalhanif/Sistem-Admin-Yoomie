@@ -8,6 +8,8 @@
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.stereotype.Service;
 
+    import java.util.NoSuchElementException;
+
     @Service
     @Slf4j
     public class AdminServiceImpl implements AdminService {
@@ -50,6 +52,17 @@
         @Override
         public Admin getAdminById(Long id) {
             return adminRepository.findById(id).orElse(null);
+        }
+
+        @Override
+        public void updateAdminProfile(Long id, AdminDTO dto) {
+            Admin admin = adminRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException("Admin not found with id: " + id));
+
+            admin.setFullName(dto.getFullName());
+            admin.setAdminName(dto.getAdminName());
+            admin.setEmail(dto.getEmail());
+            adminRepository.save(admin);
         }
 
         @Override

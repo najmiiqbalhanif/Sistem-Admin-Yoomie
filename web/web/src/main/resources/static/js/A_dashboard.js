@@ -1,13 +1,21 @@
-//JS Sidebar pada dashboard Admin
+// JS Sidebar pada dashboard Admin
 document.addEventListener('DOMContentLoaded', function() {
-    const dashboardLinks = document.querySelectorAll('.dashboard-link')
-    const contentDashboard = document.querySelectorAll('.content-dashboard')
+    const dashboardLinks = document.querySelectorAll('.dashboard-link');
+    const contentDashboard = document.querySelectorAll('.content-dashboard');
 
+    // Sembunyikan semua konten dulu
     contentDashboard.forEach(content => {
         content.style.display = 'none';
     });
 
-    const defaultDashboard = 'dashboard';
+    // Cek query param ?section=..., kalau ada pakai itu sebagai tab awal
+    let defaultDashboard = 'dashboard';
+    const params = new URLSearchParams(window.location.search);
+    const sectionFromUrl = params.get('section');
+
+    if (sectionFromUrl) {
+        defaultDashboard = sectionFromUrl; // misal: 'library'
+    }
 
     const defaultLink = document.querySelector(`.dashboard-link[menu-dashboard="${defaultDashboard}"]`);
     const defaultContent = document.querySelector(`.${defaultDashboard}`);
@@ -23,21 +31,30 @@ document.addEventListener('DOMContentLoaded', function() {
         link.addEventListener('click', () => {
             const selectedMenu = link.getAttribute('menu-dashboard');
 
-            dashboardLinks.forEach(link => link.classList.remove('active'))
+            // Hapus active dari semua link
+            dashboardLinks.forEach(link => link.classList.remove('active'));
 
+            // Set active ke link yang diklik
             link.classList.add('active');
 
+            // Sembunyikan semua konten
             contentDashboard.forEach(content => {
-                content.style.display = 'none'
+                content.style.display = 'none';
             });
 
-            const activeContent = document.querySelector(`.${selectedMenu}`)
+            // Tampilkan konten sesuai tab yang dipilih
+            const activeContent = document.querySelector(`.${selectedMenu}`);
             if (activeContent) {
-                activeContent.style.display = 'block'
+                activeContent.style.display = 'block';
             }
-        })
+
+            // UPDATE URL TANPA RELOAD: set ?section=namaTab
+            const url = new URL(window.location);
+            url.searchParams.set('section', selectedMenu);
+            window.history.replaceState({}, '', url);
+        });
     });
-})
+});
 
 // JS untuk button edit product pada library dashboard admin
 document.addEventListener('DOMContentLoaded', function () {
