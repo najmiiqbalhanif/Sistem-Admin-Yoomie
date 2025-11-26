@@ -30,8 +30,13 @@ public class loginRegisterController {
 
     // Tampilkan halaman register (root diarahkan ke register admin)
     @GetMapping("/")
-    public String showRegisterPage() {
+    public String showRoot() {
         return "login";
+    }
+
+    @GetMapping("/register")
+    public String showRegisterPage() {
+        return "register";
     }
 
     // LOGIN ADMIN
