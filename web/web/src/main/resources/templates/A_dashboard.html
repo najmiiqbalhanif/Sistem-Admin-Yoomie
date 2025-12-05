@@ -32,7 +32,6 @@
     <!-- SIDEBAR -->
     <aside id="sidebar" class="dashboard-sidebar">
         <div class="sidebar-header">
-
             <span class="sidebar-brand">Yoomie Admin</span>
         </div>
 
@@ -150,50 +149,41 @@
                 </div>
             </section>
 
-            <!-- Item Summary -->
-            <div class="card-panel">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="mb-0">Item Summary (Today)</h6>
+            <!-- Item Summary (TOP 5 TODAY) -->
+            <section class="dashboard-section">
+                <h4 class="section-title">Item Summary (Today)</h4>
+                <div class="card-panel">
+                    <div class="card-panel-body table-responsive">
+                        <table class="table table-borderless dashboard-table">
+                            <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Item Sold</th>
+                                <th>Sales</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- Baris dinamis dari backend -->
+                            <tr th:each="row : ${todayItemSummary}">
+                                <td th:text="${row.itemName}">Product Name</td>
+                                <td th:text="${row.itemSold}">0</td>
+                                <td th:text="${row.sales}">0.0</td>
+                            </tr>
+
+                            <!-- Kalau tidak ada data -->
+                            <tr th:if="${todayItemSummary == null or #lists.isEmpty(todayItemSummary)}">
+                                <td colspan="3" class="text-muted small text-center">
+                                    No items sold today.
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+            </section>
+        </section>
 
-                <div class="card-panel-body">
-                    <table class="table dashboard-table">
-                        <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th>Item Sold</th>
-                            <th>Sales</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="row : ${todayItemSummary}">
-                            <!-- nama produk -->
-                            <td th:text="${row.itemName}">Product Name</td>
-
-                            <!-- total quantity terjual hari ini -->
-                            <td th:text="${row.itemSold}">0</td>
-
-                            <!-- total sales produk ini hari ini -->
-                            <td th:text="${row.sales}">0.0</td>
-                            <!--
-                            Kalau mau format Rupiah dengan pemisah ribuan, bisa nanti kamu styling lagi,
-                            misal pakai JS atau fungsi Thymeleaf sesuai preferensi.
-                            -->
-                        </tr>
-
-                        <!-- Kalau tidak ada penjualan hari ini -->
-                        <tr th:if="${#lists.isEmpty(todayItemSummary)}">
-                            <td colspan="3" class="text-muted small text-center">
-                                No items sold today.
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-
-            <!-- TRANSACTION -->
+        <!-- TRANSACTION -->
         <section class="content-dashboard transaction" id="transaction">
             <header class="page-header">
                 <div>
