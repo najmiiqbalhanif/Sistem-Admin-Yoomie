@@ -73,19 +73,22 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void editProductById(Long id, ProductDTO productDTO) throws IOException {
-        // Cari produk berdasarkan ID
-        Product Product = productRepository.findById(id)
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        // Update data produk
-        Product.setName(productDTO.getName());
-        Product.setBrand(productDTO.getBrand());
-        Product.setCategory(productDTO.getCategory());
-        Product.setPrice(productDTO.getPrice());
-        Product.setStock(productDTO.getStock());
+        product.setName(productDTO.getName());
+        product.setBrand(productDTO.getBrand());
+        product.setCategory(productDTO.getCategory());
+        product.setPrice(productDTO.getPrice());
+        product.setStock(productDTO.getStock());
 
-        // Simpan perubahan
-        productRepository.save(Product);
+        // ✅ Kalau ada photoUrl baru dari controller, update ke entity
+        if (productDTO.getPhotoUrl() != null && !productDTO.getPhotoUrl().isEmpty()) {
+            // nilai ini adalah "storage/xxx" atau "storage\\xxx" hasil dari saveFile
+            product.setPhotoUrl(productDTO.getPhotoUrl());
+        }
+
+        productRepository.save(product);
     }
 
     @Override
