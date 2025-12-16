@@ -43,9 +43,9 @@
           dan memantau performa toko dari satu tempat.
         </p>
       </div>
-<!--      <div class="auth-illustration mt-4">-->
-<!--        <img src="img/mini-logo.svg" class="img-fluid auth-logo" alt="Yoomie Admin Logo">-->
-<!--      </div>-->
+      <!--      <div class="auth-illustration mt-4">-->
+      <!--        <img src="img/mini-logo.svg" class="img-fluid auth-logo" alt="Yoomie Admin Logo">-->
+      <!--      </div>-->
     </div>
 
     <!-- RIGHT PANEL -->
@@ -100,6 +100,10 @@
                  class="form-control auth-input"
                  placeholder="Password"
                  required>
+          <div id="passwordFeedback" class="invalid-feedback d-block" style="display:none;"></div>
+          <small class="text-muted">
+            Minimal 8 karakter & mengandung 1 karakter spesial (contoh: !@#$%).
+          </small>
         </div>
 
         <!-- box error biar lebih rapi dari pada alert -->
@@ -157,6 +161,91 @@
             });
   });
 </script>
+
+<script>
+  const form = document.getElementById('registerForm');
+  const passwordInput = document.getElementById('password');
+  const passwordFeedback = document.getElementById('passwordFeedback');
+  const submitBtn = form.querySelector('button[type="submit"]');
+
+  const errorBox = document.getElementById('errorMessage');
+
+  function validatePassword(pw) {
+    if (!pw || pw.length < 8) return 'Password minimal 8 karakter.';
+    const hasSpecial = /[^A-Za-z0-9]/.test(pw);
+    if (!hasSpecial) return 'Harus mengandung minimal 1 karakter spesial (contoh: !@#$%).';
+    return '';
+  }
+
+  function setPasswordState(message) {
+    if (message) {
+      passwordInput.classList.add('is-invalid');
+      passwordInput.classList.remove('is-valid');
+      passwordFeedback.style.display = 'block';
+      passwordFeedback.textContent = message;
+      submitBtn.disabled = true;
+    } else {
+      passwordInput.classList.remove('is-invalid');
+      passwordInput.classList.add('is-valid');
+      passwordFeedback.style.display = 'none';
+      passwordFeedback.textContent = '';
+      submitBtn.disabled = false;
+    }
+  }
+
+  passwordInput.addEventListener('input', () => {
+    const msg = validatePassword(passwordInput.value);
+    setPasswordState(msg);
+  });
+
+  form.addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    // cek dulu sebelum submit
+    const msg = validatePassword(passwordInput.value);
+    setPasswordState(msg);
+    if (msg) return;
+
+    const formData = {
+      adminName: document.querySelector('[name="adminName"]').value,
+      fullName: document.querySelector('[name="fullName"]').value,
+      email: document.querySelector('[name="email"]').value,
+      password: document.querySelector('[name="password"]').value
+    };
+
+    errorBox.classList.add('d-none');
+    errorBox.textContent = '';
+
+    try {
+      const res = await fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const ct = res.headers.get('content-type') || '';
+      const body = ct.includes('application/json') ? await res.json() : await res.text();
+
+      if (!res.ok) {
+        // kalau backend ngasih error per-field
+        if (body && typeof body === 'object') {
+          if (body.password) setPasswordState(body.password);
+          errorBox.textContent = Object.values(body).join(' | ');
+        } else {
+          errorBox.textContent = body || 'Register gagal.';
+        }
+        errorBox.classList.remove('d-none');
+        return;
+      }
+
+      window.location.href = '/login';
+    } catch (e) {
+      errorBox.textContent = 'Terjadi kesalahan koneksi. Coba lagi.';
+      errorBox.classList.remove('d-none');
+    }
+  });
+</script>
+
 
 </body>
 </html>

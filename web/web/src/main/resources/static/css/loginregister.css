@@ -172,6 +172,48 @@
     color: #9ca3af;
 }
 
+.auth-input.is-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: none !important;
+}
+
+.auth-input.is-valid {
+    border-color: #198754 !important;
+    box-shadow: none !important;
+}
+
+.pw-wrap{
+    position: relative;
+}
+
+.pw-input{
+    padding-right: 44px; /* ruang untuk icon */
+}
+
+.pw-toggle{
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    padding: 6px;
+    color: #6b7280;
+    z-index: 10;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.pw-toggle:focus{
+    outline: none;
+    box-shadow: none;
+}
+
+.pw-toggle:hover{
+    color: #111827;
+}
+
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 991.98px) {
     .auth-card {

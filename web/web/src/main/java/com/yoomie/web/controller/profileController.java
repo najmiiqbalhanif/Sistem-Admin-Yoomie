@@ -1,14 +1,16 @@
 package com.yoomie.web.controller;
 
 import com.yoomie.web.dto.AdminDTO;
-import com.yoomie.web.models.Admin;
+import com.yoomie.web.dto.ChangePasswordRequest;
 import com.yoomie.web.services.AdminService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Controller
 public class profileController {
@@ -26,9 +28,7 @@ public class profileController {
             return "redirect:/login";
         }
 
-        // Ambil DTO, bukan entity langsung
         AdminDTO admin = adminService.DTOgetAdminById(adminId);
-
         model.addAttribute("admin", admin);
 
         return "A_profile";
@@ -43,9 +43,27 @@ public class profileController {
             return "redirect:/login";
         }
 
-        // Simpan perubahan profile (fullName, adminName, email, password)
-        adminService.updateAdminProfile(adminId, formAdmin);
+        // pastikan update profile TIDAK mengubah password
+        formAdmin.setPassword(null);
 
+        adminService.updateAdminProfile(adminId, formAdmin);
         return "redirect:/profile";
+    }
+
+    @PostMapping("/profile/change-password")
+    @ResponseBody
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest req, HttpSession session) {
+
+        Long adminId = (Long) session.getAttribute("adminId");
+        if (adminId == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "Unauthorized"));
+        }
+
+        if (!req.getNewPassword().equals(req.getConfirmPassword())) {
+            throw new IllegalArgumentException("Konfirmasi password tidak sama.");
+        }
+
+        adminService.changePassword(adminId, req.getCurrentPassword(), req.getNewPassword());
+        return ResponseEntity.ok(Map.of("message", "Password berhasil diubah."));
     }
 }
