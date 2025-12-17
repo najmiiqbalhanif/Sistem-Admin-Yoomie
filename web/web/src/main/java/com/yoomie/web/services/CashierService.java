@@ -3,7 +3,7 @@ package com.yoomie.web.services;
 import com.yoomie.web.dto.CashierDTO;
 import com.yoomie.web.models.Cashier;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.util.List;
 import java.io.IOException;
 
 public interface CashierService {
@@ -20,4 +20,8 @@ public interface CashierService {
     public CashierDTO DTOgetCashierById(Long id);
 
     public void updateCashierProfile(Long cashierId, String cashierName, String email, String fullName, MultipartFile profileImage) throws IOException;
+
+    void deleteCashierById(Long cashierId);
+
+    List<CashierDTO> getAllCashiers();
 }

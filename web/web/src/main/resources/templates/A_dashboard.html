@@ -25,9 +25,6 @@
 </head>
 <body class="dashboard-body">
 
-<!--&lt;!&ndash; Navbar &ndash;&gt;-->
-<!--<div th:replace="fragments/A_navbar"></div>-->
-
 <div class="dashboard-wrapper">
     <!-- SIDEBAR -->
     <aside id="sidebar" class="dashboard-sidebar">
@@ -47,14 +44,6 @@
             <p class="dashboard-link" menu-dashboard="library">
                 <span class="sidebar-icon">📚</span>
                 <span>Library</span>
-            </p>
-            <p class="dashboard-link" menu-dashboard="reports">
-                <span class="sidebar-icon">📊</span>
-                <span>Reports</span>
-            </p>
-            <p class="dashboard-link" menu-dashboard="reviews">
-                <span class="sidebar-icon">💬</span>
-                <span>Reviews</span>
             </p>
             <p class="dashboard-link" menu-dashboard="cashier">
                 <span class="sidebar-icon">👨‍💻</span>
@@ -76,7 +65,6 @@
             </div>
 
             <div class="topbar-right">
-                <!-- kalau mau search, nanti bisa ditambah di sini -->
                 <button class="topbar-icon-btn" type="button" aria-label="Notifications">
                     🔔
                 </button>
@@ -128,7 +116,6 @@
             <section class="dashboard-section">
                 <h4 class="section-title">Sales Summary</h4>
                 <div class="row g-3 mb-1">
-                    <!-- Sales Today -->
                     <div class="col-md-6">
                         <div class="card-summary">
                             <p class="card-summary-label">Sales (Today)</p>
@@ -138,7 +125,6 @@
                         </div>
                     </div>
 
-                    <!-- Transactions Today -->
                     <div class="col-md-6">
                         <div class="card-summary">
                             <p class="card-summary-label">Transactions (Today)</p>
@@ -149,7 +135,7 @@
                 </div>
             </section>
 
-            <!-- Item Summary (TOP 5 TODAY) -->
+            <!-- Item Summary (TODAY) -->
             <section class="dashboard-section">
                 <h4 class="section-title">Item Summary (Today)</h4>
                 <div class="card-panel">
@@ -163,14 +149,12 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <!-- Baris dinamis dari backend -->
                             <tr th:each="row : ${todayItemSummary}">
                                 <td th:text="${row.itemName}">Product Name</td>
                                 <td th:text="${row.itemSold}">0</td>
                                 <td th:text="${row.sales}">0.0</td>
                             </tr>
 
-                            <!-- Kalau tidak ada data -->
                             <tr th:if="${todayItemSummary == null or #lists.isEmpty(todayItemSummary)}">
                                 <td colspan="3" class="text-muted small text-center">
                                     No items sold today.
@@ -215,7 +199,6 @@
                                         </tr>
                                         </thead>
                                         <tbody id="paymentItemsTable">
-                                        <!-- Data akan dimasukkan secara dinamis -->
                                         </tbody>
                                     </table>
                                 </div>
@@ -253,7 +236,6 @@
                                 <td th:text="${transaction.getTotalAmount()}"></td>
                                 <td th:text="${transaction.getPaymentMethod()}"></td>
                                 <td>
-                                    <!-- contoh placeholder (sesuaikan dengan data yang benar jika perlu) -->
                                     <button class="btn btn-light btn-sm">Details</button>
                                 </td>
                             </tr>
@@ -274,20 +256,19 @@
                 </div>
 
                 <div class="page-actions">
-                    <!-- SEARCH -->
                     <div class="library-search">
                         <input type="text"
                                id="librarySearchInput"
                                placeholder="Search by name...">
                     </div>
 
-                    <!-- BUTTON ADD -->
                     <button type="button" class="btn btn-primary-soft"
                             data-bs-toggle="modal" data-bs-target="#addProductModal">
                         + Add New Product
                     </button>
                 </div>
             </header>
+
             <!-- Modal Add New Product -->
             <div class="modal fade" id="addProductModal" tabindex="-1"
                  aria-labelledby="addProductModalLabel" aria-hidden="true">
@@ -398,6 +379,58 @@
                 </div>
             </div>
 
+            <!-- Stock Logs -->
+            <div class="modal fade" id="stockLogModal" tabindex="-1"
+                 aria-labelledby="stockLogModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="stockLogModalLabel">Stock Logs</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <div class="text-muted small">Product</div>
+                                    <div id="stockLogProductName" style="font-weight:600;">-</div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-sm table-striped align-middle">
+                                    <thead>
+                                    <tr>
+                                        <th style="width: 180px;">Waktu</th>
+                                        <th style="width: 120px;">Old</th>
+                                        <th style="width: 120px;">New</th>
+                                        <th style="width: 120px;">Diff</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="stockLogTableBody">
+                                    <tr>
+                                        <td colspan="5" class="text-muted small text-center">
+                                            Belum ada data.
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div id="stockLogError" class="alert alert-danger d-none mt-3"></div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary"
+                                    data-bs-dismiss="modal">Close</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
             <!-- Table Item Library -->
             <section class="dashboard-section">
                 <div class="card-panel">
@@ -433,6 +466,17 @@
                                                      data-stock=${product.stock}">
                                         Edit
                                     </button>
+
+                                    <button type="button"
+                                            class="btn btn-secondary btn-sm button-stockLogs"
+                                            th:attr="data-bs-toggle='modal',
+                                                     data-bs-target='#stockLogModal',
+                                                     data-product-id=${product.id},
+                                                     data-product-name=${product.name}">
+                                        <i class="bi bi-clock-history"></i> Logs
+                                    </button>
+
+
                                     <form th:action="@{'A_dashboard/delProd/' + ${product.id}}"
                                           method="post" style="display:inline;">
                                         <button type="submit" class="btn btn-danger btn-sm"
@@ -449,6 +493,61 @@
             </section>
 
         </section>
+
+        <!-- CASHIER -->
+        <section class="content-dashboard cashier" id="cashier">
+            <header class="page-header">
+                <div>
+                    <h2 class="page-title">Cashier</h2>
+                    <p class="page-subtitle">Kelola akun kasir yang terdaftar.</p>
+                </div>
+            </header>
+
+            <section class="dashboard-section">
+                <div class="card-panel">
+                    <div class="card-panel-body table-responsive">
+                        <table class="table table-borderless dashboard-table">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cashier Name</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr th:each="cashier : ${cashiers}">
+                                <td th:text="${cashier.id}">1</td>
+                                <td th:text="${cashier.cashierName}">cashier01</td>
+                                <td th:text="${cashier.fullName}">Full Name</td>
+                                <td th:text="${cashier.email}">email@mail.com</td>
+                                <td>
+                                    <!-- ✅ TOMBOL DELETE CASHIER -->
+                                    <form th:action="@{'/A_dashboard/delCashier/' + ${cashier.id}}"
+                                          method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Yakin hapus akun cashier ini?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+
+                            <tr th:if="${cashiers == null or #lists.isEmpty(cashiers)}">
+                                <td colspan="5" class="text-muted small text-center">
+                                    Belum ada cashier terdaftar.
+                                </td>
+                            </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </section>
+
     </main>
 </div>
 

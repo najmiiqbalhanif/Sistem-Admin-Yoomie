@@ -6,6 +6,8 @@ import com.yoomie.web.dto.ProductDTO;
 import com.yoomie.web.models.Admin;
 import com.yoomie.web.models.Payment;
 import com.yoomie.web.models.Product;
+import com.yoomie.web.models.ProductStockLog;
+import com.yoomie.web.repositories.ProductStockLogRepository;
 import com.yoomie.web.services.AdminService;
 import com.yoomie.web.services.CartService;
 import com.yoomie.web.services.CashierService;
@@ -31,19 +33,23 @@ public class dashboardController {
     private final CartService cartService;
     private final PaymentService paymentService;
     private final AdminService adminService;
+    private final ProductStockLogRepository productStockLogRepository;
 
     public dashboardController(ProductService productService,
                                TransactionService transactionService,
                                CashierService cashierService,
                                CartService cartService,
                                PaymentService paymentService,
-                               AdminService adminService) {
+                               AdminService adminService,
+                               ProductStockLogRepository productStockLogRepository) {
+
         this.productService = productService;
         this.transactionService = transactionService;
         this.cashierService = cashierService;
         this.cartService = cartService;
         this.paymentService = paymentService;
         this.adminService = adminService;
+        this.productStockLogRepository = productStockLogRepository;
     }
 
     @GetMapping("/A_dashboard")
@@ -100,6 +106,9 @@ public class dashboardController {
         Product product = new Product();
         model.addAttribute("product", product);
 
+        // Untuk Menampilkan List Cashier
+        model.addAttribute("cashiers", cashierService.getAllCashiers());
+
         return "A_dashboard";
     }
 
@@ -151,26 +160,35 @@ public class dashboardController {
             @PathVariable Long id,
             @ModelAttribute ProductDTO productDTO,
             @RequestParam(value = "photo", required = false) MultipartFile photo,
-            Model model) {
+            Model model,
+            HttpSession session
+    ) {
         try {
-            // Periksa apakah ada file foto baru
+            Long adminId = (Long) session.getAttribute("adminId");
+            if (adminId == null) return "redirect:/login";
+
             if (photo != null && !photo.isEmpty()) {
-                // Simpan file baru dan dapatkan path-nya
                 String filePath = productService.saveFile(photo);
-                productDTO.setPhotoUrl(filePath); // Update URL foto pada DTO
+                productDTO.setPhotoUrl(filePath);
             }
 
-            // Update data produk
-            productService.editProductById(id, productDTO);
-
+            productService.editProductById(id, productDTO, adminId);
             model.addAttribute("successMessage", "Product successfully updated!");
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("errorMessage", "Failed to update product. Please try again.");
         }
 
-        // Redirect kembali ke halaman library
         return "redirect:/A_dashboard?section=library";
+    }
+
+    @GetMapping("/A_dashboard/stockLogs/{productId}")
+    @ResponseBody
+    public List<ProductStockLog> getStockLogs(@PathVariable Long productId, HttpSession session) {
+        Long adminId = (Long) session.getAttribute("adminId");
+        if (adminId == null) return List.of();
+
+        return productStockLogRepository.findByProduct_IdOrderByCreatedOnDesc(productId);
     }
 
     @PostMapping("/A_dashboard/delProd/{id}")
@@ -178,5 +196,17 @@ public class dashboardController {
         productService.deleteProductById(id);
 
         return "redirect:/A_dashboard?section=library";
+    }
+
+    @PostMapping("/A_dashboard/delCashier/{id}")
+    public String deleteCashier(@PathVariable Long id, HttpSession session) {
+        Long adminId = (Long) session.getAttribute("adminId");
+        if (adminId == null) {
+            return "redirect:/login";
+        }
+
+        cashierService.deleteCashierById(id);
+
+        return "redirect:/A_dashboard?section=cashier";
     }
 }

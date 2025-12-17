@@ -28,7 +28,7 @@ public interface ProductService {
     public Product saveProduct(Product product);
 
     //Mengedit produk berdasarkan ID
-    public void editProductById(Long id, ProductDTO productDTO) throws IOException;
+    public void editProductById(Long id, ProductDTO productDTO, Long adminId) throws IOException;
 
     // Menghapus produk berdasarkan ID
     public void deleteProductById(Long id);

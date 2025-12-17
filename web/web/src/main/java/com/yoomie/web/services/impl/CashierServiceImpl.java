@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.UUID;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -110,6 +112,14 @@ public class CashierServiceImpl implements CashierService {
     }
 
     @Override
+    public List<CashierDTO> getAllCashiers() {
+        return cashierRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public CashierDTO DTOgetCashierById(Long id) {
         Cashier cashier = cashierRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Cashier not found"));
@@ -160,4 +170,14 @@ public class CashierServiceImpl implements CashierService {
 
         return fileName;
     }
+
+    @Override
+    @Transactional
+    public void deleteCashierById(Long cashierId) {
+        Cashier cashier = cashierRepository.findById(cashierId)
+                .orElseThrow(() -> new IllegalArgumentException("Cashier not found"));
+
+        cashierRepository.delete(cashier);
+    }
+
 }

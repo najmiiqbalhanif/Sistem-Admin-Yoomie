@@ -230,3 +230,93 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const stockLogButtons = document.querySelectorAll('.button-stockLogs');
+
+    stockLogButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const productId = button.getAttribute('data-product-id');
+            const productName = button.getAttribute('data-product-name');
+
+            const nameEl = document.getElementById('stockLogProductName');
+            if (nameEl) nameEl.textContent = productName || '-';
+
+            const tbody = document.getElementById('stockLogTableBody');
+            const errBox = document.getElementById('stockLogError');
+
+            if (errBox) {
+                errBox.classList.add('d-none');
+                errBox.textContent = '';
+            }
+            if (tbody) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-muted small text-center">Loading...</td>
+                    </tr>
+                `;
+            }
+
+            fetch(`/A_dashboard/stockLogs/${productId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(logs => {
+                    if (!tbody) return;
+
+                    if (!logs || logs.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="5" class="text-muted small text-center">Belum ada log stok.</td>
+                            </tr>
+                        `;
+                        return;
+                    }
+
+                    tbody.innerHTML = '';
+
+                    logs.forEach(log => {
+                        const createdOn = log.createdOn || log.createdAt || '-';
+                        const oldStock = (log.oldStock ?? '-');
+                        const newStock = (log.newStock ?? '-');
+                        const diff = (log.diff ?? (typeof oldStock === 'number' && typeof newStock === 'number' ? (newStock - oldStock) : '-'));
+
+                        const diffBadge = (typeof diff === 'number')
+                            ? (diff >= 0
+                                ? `<span class="badge bg-success">+${diff}</span>`
+                                : `<span class="badge bg-danger">${diff}</span>`)
+                            : `<span class="badge bg-secondary">${diff}</span>`;
+
+                        const row = `
+                            <tr>
+                                <td>${createdOn}</td>
+                                <td>${oldStock}</td>
+                                <td>${newStock}</td>
+                                <td>${diffBadge}</td>
+                            </tr>
+                        `;
+                        tbody.insertAdjacentHTML('beforeend', row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching stock logs:', error);
+
+                    if (tbody) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="5" class="text-muted small text-center">Tidak bisa memuat data.</td>
+                            </tr>
+                        `;
+                    }
+
+                    if (errBox) {
+                        errBox.textContent = error.message || 'Terjadi kesalahan';
+                        errBox.classList.remove('d-none');
+                    }
+                });
+        });
+    });
+});
