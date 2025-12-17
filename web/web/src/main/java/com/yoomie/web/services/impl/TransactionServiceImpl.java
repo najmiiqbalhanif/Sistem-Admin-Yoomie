@@ -1,20 +1,16 @@
 package com.yoomie.web.services.impl;
 
-// ... (imports lainnya)
-
-import com.yoomie.web.dto.TransactionDTO; // Penting: pastikan TransactionDTO diimport
 import com.yoomie.web.dto.PaymentItemDTO;
-import com.yoomie.web.models.Transaction;
+import com.yoomie.web.dto.TransactionDTO;
+import com.yoomie.web.models.Cashier;
 import com.yoomie.web.models.Payment;
 import com.yoomie.web.models.PaymentItem;
-import com.yoomie.web.models.Cashier;
+import com.yoomie.web.models.Transaction;
 import com.yoomie.web.repositories.OrderRepository;
 import com.yoomie.web.repositories.PaymentItemRepository;
 import com.yoomie.web.repositories.PaymentRepository;
-import com.yoomie.web.repositories.ProductRepository;
+import com.yoomie.web.services.CartService;
 import com.yoomie.web.services.TransactionService;
-import com.yoomie.web.services.CartService; // Ini untuk injeksi CartService
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,15 +22,16 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
+
     private final OrderRepository orderRepository;
     private final PaymentItemRepository paymentItemRepository;
     private final PaymentRepository paymentRepository;
-    private final ProductRepository productRepository; // Pastikan ini ada jika diperlukan
-    private final CartService cartService; // Pastikan ini ada
+    private final CartService cartService;
 
     @Override
-    public List<TransactionDTO> getAllTransactions() { // <--- PASTIKAN METHOD INI ADA DAN TIDAK DIKOMENTARI
-        return orderRepository.findAll().stream()
+    public List<TransactionDTO> getAllTransactions() {
+        return orderRepository.findAll()
+                .stream()
                 .map(this::transactionToDTO)
                 .collect(Collectors.toList());
     }
@@ -55,16 +52,22 @@ public class TransactionServiceImpl implements TransactionService {
                 .cashierId(transaction.getCashier().getId())
                 .cashierName(transaction.getCashier().getCashierName())
                 .createdOn(transaction.getPayment().getCreatedOn().toString())
-                .cartSummary(transaction.getPayment().getPaymentItems().stream()
-                        .map(item -> item.getProductName() + " x " + item.getQuantity())
-                        .collect(Collectors.joining(", ")))
+                .cartSummary(
+                        transaction.getPayment().getPaymentItems().stream()
+                                .map(item -> item.getProductName() + " x " + item.getQuantity())
+                                .collect(Collectors.joining(", "))
+                )
                 .totalAmount(transaction.getPayment().getTotalAmount())
                 .paymentMethod(transaction.getPayment().getPaymentMethod())
+                .cashPaid(transaction.getPayment().getCashPaid())
+                .changeAmount(transaction.getPayment().getChangeAmount())
                 .build();
     }
 
     @Transactional
     public Transaction processCheckout(Cashier cashier, Payment payment, List<PaymentItemDTO> paymentItems) {
+        payment.setCashier(cashier);
+
         payment = paymentRepository.save(payment);
 
         Transaction transaction = new Transaction();
@@ -83,7 +86,7 @@ public class TransactionServiceImpl implements TransactionService {
             paymentItemRepository.save(paymentItem);
         }
 
-        cartService.clearCart(cashier.getId()); // Panggil clearCart di sini
+        cartService.clearCart(cashier.getId());
 
         return transaction;
     }

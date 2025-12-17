@@ -21,4 +21,10 @@ public class Payment extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "cashier_id")
     private Cashier cashier;
+
+    @Column(nullable = true)
+    private Double cashPaid;
+
+    @Column(nullable = true)
+    private Double changeAmount;
 }

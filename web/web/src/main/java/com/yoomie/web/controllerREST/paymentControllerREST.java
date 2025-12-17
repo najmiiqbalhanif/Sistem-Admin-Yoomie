@@ -1,6 +1,6 @@
 package com.yoomie.web.controllerREST;
 
-import com.yoomie.web.dto.TransactionDTO; // Import TransactionDTO
+import com.yoomie.web.dto.TransactionDTO;
 import com.yoomie.web.dto.PaymentDTO;
 import com.yoomie.web.dto.PaymentItemDTO;
 import com.yoomie.web.models.Transaction;
@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-// Ubah base request mapping atau buat controller baru untuk transactions
 @RequestMapping("/api")
-public class paymentControllerREST { // Atau rename menjadi TransactionControllerREST jika lebih sesuai
+public class paymentControllerREST {
+
     private final TransactionService transactionService;
     private final CashierService cashierService;
 
@@ -40,49 +40,93 @@ public class paymentControllerREST { // Atau rename menjadi TransactionControlle
 
     @PostMapping("/checkoutpayment/submit")
     public ResponseEntity<?> submitCheckout(@RequestBody CheckoutPaymentRequest request) {
+
+        if (request.getCashierId() == null) {
+            return ResponseEntity.badRequest().body("cashierId is required");
+        }
+
+        if (request.getTotalAmount() == null) {
+            return ResponseEntity.badRequest().body("totalAmount is required");
+        }
+
+        if (request.getPaymentItems() == null || request.getPaymentItems().isEmpty()) {
+            return ResponseEntity.badRequest().body("paymentItems is required");
+        }
+
         Cashier cashier = cashierService.getCashierById(request.getCashierId());
         if (cashier == null) {
             return ResponseEntity.badRequest().body("Cashier not found");
         }
 
+        String method = request.getPaymentMethod() != null ? request.getPaymentMethod().toLowerCase() : "";
+        if (!(method.equals("cash") || method.equals("mandiri") || method.equals("bca"))) {
+            return ResponseEntity.badRequest().body("Invalid payment method. Use: cash / mandiri / bca");
+        }
+
+        double total = request.getTotalAmount();
+
         Payment payment = new Payment();
-        payment.setPaymentMethod(request.getPaymentMethod());
-        payment.setTotalAmount(request.getTotalAmount());
+        payment.setCashier(cashier);
+        payment.setPaymentMethod(method);
+        payment.setTotalAmount(total);
+
+        if (method.equals("cash")) {
+            if (request.getCashPaid() == null) {
+                return ResponseEntity.badRequest().body("cashPaid is required for cash payment");
+            }
+
+            double cashPaid = request.getCashPaid();
+
+            if (cashPaid < total) {
+                return ResponseEntity.badRequest().body("Uang customer kurang");
+            }
+
+            payment.setCashPaid(cashPaid);
+            payment.setChangeAmount(cashPaid - total);
+        } else {
+            payment.setCashPaid(null);
+            payment.setChangeAmount(null);
+        }
 
         try {
-            Transaction transaction = transactionService.processCheckout(cashier, payment, request.getPaymentItems());
+            Transaction transaction = transactionService.processCheckout(
+                    cashier,
+                    payment,
+                    request.getPaymentItems()
+            );
             return ResponseEntity.ok(transaction);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to process checkout: " + e.getMessage());
         }
     }
 
-    // --- NEW: Endpoint untuk mendapatkan semua transaction ---
-    @GetMapping("/transactions") // Endpoint yang akan kita panggil dari Flutter
+    @GetMapping("/transactions")
     public ResponseEntity<List<TransactionDTO>> getAllTransactions() {
         List<TransactionDTO> transactions = transactionService.getAllTransactions();
         return ResponseEntity.ok(transactions);
     }
 
-    // --- NEW: Endpoint untuk mendapatkan transaction berdasarkan cashier ID (lebih relevan untuk aplikasi cashier) ---
     @GetMapping("/transactions/cashier/{cashierId}")
     public ResponseEntity<List<TransactionDTO>> getTransactionsByCashierId(@PathVariable Long cashierId) {
+
         List<Transaction> transactions = transactionService.getTransactionsByCashierId(cashierId);
+
         List<TransactionDTO> transactionDTOs = transactions.stream()
-                .map(transaction -> {
-                    return TransactionDTO.builder()
-                            .id(transaction.getId())
-                            .cashierId(transaction.getCashier().getId())
-                            .cashierName(transaction.getCashier().getCashierName())
-                            .createdOn(transaction.getPayment().getCreatedOn().toString())
-                            .cartSummary(transaction.getPayment().getPaymentItems().stream()
-                                    .map(item -> item.getProductName() + " x " + item.getQuantity())
-                                    .collect(Collectors.joining(", ")))
-                            .totalAmount(transaction.getPayment().getTotalAmount())
-                            .paymentMethod(transaction.getPayment().getPaymentMethod())
-                            .build();
-                })
+                .map(transaction -> TransactionDTO.builder()
+                        .id(transaction.getId())
+                        .cashierId(transaction.getCashier().getId())
+                        .cashierName(transaction.getCashier().getCashierName())
+                        .createdOn(transaction.getPayment().getCreatedOn().toString())
+                        .cartSummary(transaction.getPayment().getPaymentItems().stream()
+                                .map(item -> item.getProductName() + " x " + item.getQuantity())
+                                .collect(Collectors.joining(", ")))
+                        .totalAmount(transaction.getPayment().getTotalAmount())
+                        .paymentMethod(transaction.getPayment().getPaymentMethod())
+                        .cashPaid(transaction.getPayment().getCashPaid())
+                        .changeAmount(transaction.getPayment().getChangeAmount())
+                        .build())
                 .collect(Collectors.toList());
+
         return ResponseEntity.ok(transactionDTOs);
     }
 }
