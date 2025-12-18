@@ -7,10 +7,12 @@ import com.yoomie.web.repositories.CartRepository;
 import com.yoomie.web.repositories.CashierRepository;
 import com.yoomie.web.services.CashierService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.UUID;
@@ -23,59 +25,79 @@ public class CashierServiceImpl implements CashierService {
 
     private final CashierRepository cashierRepository;
     private final CartRepository cartRepository;
+    private final PasswordEncoder passwordEncoder;
 
     private static final String UPLOAD_DIR = "uploads/";
     private static final String BASE_IMAGE_URL = "http://10.0.2.2:8080/";
 
     @Autowired
-    public CashierServiceImpl(CashierRepository cashierRepository, CartRepository cartRepository) {
+    public CashierServiceImpl(CashierRepository cashierRepository,
+                              CartRepository cartRepository,
+                              PasswordEncoder passwordEncoder) {
         this.cashierRepository = cashierRepository;
         this.cartRepository = cartRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    private boolean isBcryptHash(String value) {
+        if (value == null) return false;
+        return value.startsWith("$2a$") || value.startsWith("$2b$") || value.startsWith("$2y$");
     }
 
     @Override
     public Cashier registerCashier(CashierDTO cashierDTO) {
-        cashierRepository.findByEmail(cashierDTO.getEmail()).ifPresent(cashier -> {
+        if (cashierRepository.existsByEmail(cashierDTO.getEmail())) {
             throw new IllegalStateException("Email already in use");
-        });
+        }
+        if (cashierRepository.existsByCashierName(cashierDTO.getCashierName())) {
+            throw new IllegalStateException("Cashier name already in use");
+        }
 
         Cashier cashier = new Cashier();
         cashier.setCashierName(cashierDTO.getCashierName());
         cashier.setEmail(cashierDTO.getEmail());
-        cashier.setPassword(cashierDTO.getPassword());
+        cashier.setFullName(cashierDTO.getFullName()); // penting karena entity fullName NOT NULL
+
+        // ✅ HASH password
+        cashier.setPassword(passwordEncoder.encode(cashierDTO.getPassword()));
 
         cashier = cashierRepository.save(cashier);
 
         Cart cart = new Cart();
+        cart.setTotalPrice(0.0);
         cart.setCashier(cashier);
         cartRepository.save(cart);
 
         cashier.setCart(cart);
-
         return cashierRepository.save(cashier);
     }
 
     @Override
     @Transactional
     public Cashier registerCashierApp(CashierDTO cashierDTO) {
-        cashierRepository.findByEmail(cashierDTO.getEmail()).ifPresent(cashier -> {
+        if (cashierRepository.existsByEmail(cashierDTO.getEmail())) {
             throw new IllegalStateException("Email already in use");
-        });
+        }
+        if (cashierRepository.existsByCashierName(cashierDTO.getCashierName())) {
+            throw new IllegalStateException("Cashier name already in use");
+        }
 
         try {
             Cashier cashier = new Cashier();
             cashier.setCashierName(cashierDTO.getCashierName());
             cashier.setEmail(cashierDTO.getEmail());
-            cashier.setPassword(cashierDTO.getPassword());
             cashier.setFullName(cashierDTO.getFullName());
+
+            // ✅ HASH password
+            cashier.setPassword(passwordEncoder.encode(cashierDTO.getPassword()));
 
             // Simpan cashier dulu (supaya punya ID)
             cashier = cashierRepository.save(cashier);
 
             // Buat cart baru
             Cart cart = new Cart();
-            cart.setTotalPrice(0.0);          // default aman
-            cart.setCashier(cashier);         // set relasi
+            cart.setTotalPrice(0.0);
+            cart.setCashier(cashier);
 
             // Simpan cart
             cart = cartRepository.save(cart);
@@ -83,21 +105,35 @@ public class CashierServiceImpl implements CashierService {
             // Set balik ke cashier
             cashier.setCart(cart);
 
-            // Simpan update cashier (opsional, tapi rapi)
+            // Simpan update cashier (opsional)
             cashier = cashierRepository.save(cashier);
 
             return cashier;
         } catch (Exception e) {
             log.error("Error while registering cashier & creating cart", e);
-            // biar @Transactional trigger rollback:
-            throw e;
+            throw e; // trigger rollback
         }
     }
 
     @Override
     public boolean authenticateCashier(String email, String password) {
         return cashierRepository.findByEmail(email)
-                .map(cashier -> cashier.getPassword().equals(password))
+                .map(cashier -> {
+                    String stored = cashier.getPassword();
+
+                    // ✅ normal: bcrypt
+                    if (isBcryptHash(stored)) {
+                        return passwordEncoder.matches(password, stored);
+                    }
+
+                    // ✅ kompatibilitas data lama plaintext (optional)
+                    boolean ok = stored != null && stored.equals(password);
+                    if (ok) {
+                        cashier.setPassword(passwordEncoder.encode(password));
+                        cashierRepository.save(cashier);
+                    }
+                    return ok;
+                })
                 .orElse(false);
     }
 
@@ -134,7 +170,7 @@ public class CashierServiceImpl implements CashierService {
                 .id(cashier.getId())
                 .cashierName(cashier.getCashierName())
                 .email(cashier.getEmail())
-                .password(cashier.getPassword())
+                .password(null) // ✅ jangan kirim password (meskipun hash) ke client
                 .fullName(cashier.getFullName())
                 .profileImage(fullProfileImageUrl)
                 .build();
@@ -179,5 +215,4 @@ public class CashierServiceImpl implements CashierService {
 
         cashierRepository.delete(cashier);
     }
-
 }
