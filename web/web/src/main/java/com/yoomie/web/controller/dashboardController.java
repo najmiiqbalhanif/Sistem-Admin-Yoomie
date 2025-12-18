@@ -19,6 +19,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Comparator;
+import com.yoomie.web.dto.ItemSummaryDTO;
+
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -97,6 +102,73 @@ public class dashboardController {
 
         model.addAttribute("todaySales", todaySales);
         model.addAttribute("todayTransactionCount", todayTransactionCount);
+
+        // ----------------------------
+        // ITEM SUMMARY HARI INI (TOP 5 PRODUK)
+        // ----------------------------
+        Map<String, Long> itemSoldMap = new HashMap<>();
+        Map<String, Double> salesMap = new HashMap<>();
+
+        for (TransactionDTO t : transactions) {
+            String createdOnStr = t.getCreatedOn();
+            if (createdOnStr == null || createdOnStr.length() < 10) {
+                continue;
+            }
+            LocalDate txDate = LocalDate.parse(createdOnStr.substring(0, 10), dateFormatter);
+            if (!txDate.equals(today)) {
+                // Bukan transaksi hari ini
+                continue;
+            }
+
+            // Asumsi TransactionDTO punya getId() yang merupakan transactionId
+            Long transactionId = t.getId();
+            if (transactionId == null) {
+                continue;
+            }
+
+            try {
+                Payment payment = paymentService.getPaymentByTransactionId(transactionId);
+                if (payment == null || payment.getPaymentItems() == null) {
+                    continue;
+                }
+
+                payment.getPaymentItems().forEach(item -> {
+                    String productName = item.getProductName();
+                    if (productName == null || productName.isBlank()) {
+                        productName = "Unknown Item";
+                    }
+
+                    long qty = item.getQuantity();      // jumlah pcs produk di transaksi ini
+                    double subTotal = item.getSubTotal(); // subtotal (qty * harga) untuk produk ini di transaksi ini
+
+                    // Akumulasi ke map
+                    itemSoldMap.merge(productName, qty, Long::sum);
+                    salesMap.merge(productName, subTotal, Double::sum);
+                });
+            } catch (Exception e) {
+                // Jangan sampai 1 error transaksi merusak dashboard
+                e.printStackTrace();
+            }
+        }
+
+        // Konversi ke DTO, sort desc by itemSold, ambil 5 teratas
+        List<ItemSummaryDTO> todayItemSummary = itemSoldMap.entrySet().stream()
+                .map(entry -> {
+                    String productName = entry.getKey();
+                    long totalSold = entry.getValue();
+                    double totalSales = salesMap.getOrDefault(productName, 0.0);
+                    return ItemSummaryDTO.builder()
+                            .itemName(productName)
+                            .itemSold(totalSold)
+                            .sales(totalSales)
+                            .build();
+                })
+                .sorted(Comparator.comparingLong(ItemSummaryDTO::getItemSold).reversed())
+                .limit(5)
+                .toList();
+
+        model.addAttribute("todayItemSummary", todayItemSummary);
+
 
         // Untuk Tampilkan Product di Library
         List<ProductDTO> products = productService.getAllProducts();
