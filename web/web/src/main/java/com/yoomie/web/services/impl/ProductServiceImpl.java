@@ -25,7 +25,6 @@ public class ProductServiceImpl implements ProductService {
     private final ProductStockLogRepository productStockLogRepository;
 
     private static final String UPLOAD_DIR = "web/web/src/main/resources/static/storage/";
-    private static final String BASE_IMAGE_URL = "http://10.0.2.2:8080/";
 
     @Autowired
     public ProductServiceImpl(ProductRepository productRepository,
@@ -103,7 +102,7 @@ public class ProductServiceImpl implements ProductService {
 
     private ProductDTO convertToDTO(Product product) {
         String photoPath = product.getPhotoUrl() != null ? product.getPhotoUrl().replace("\\", "/") : "";
-        String fullImageUrl = photoPath.isEmpty() ? "" : BASE_IMAGE_URL + photoPath;
+        String fullImageUrl = photoPath.isEmpty() ? "" : "/" + photoPath;
 
         return ProductDTO.builder()
                 .id(product.getId())
