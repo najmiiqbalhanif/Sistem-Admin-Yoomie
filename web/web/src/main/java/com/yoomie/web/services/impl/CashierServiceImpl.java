@@ -6,12 +6,12 @@ import com.yoomie.web.models.Cart;
 import com.yoomie.web.repositories.CartRepository;
 import com.yoomie.web.repositories.CashierRepository;
 import com.yoomie.web.services.CashierService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -39,57 +39,42 @@ public class CashierServiceImpl implements CashierService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    private boolean isBcryptHash(String value) {
-        if (value == null) return false;
-        return value.startsWith("$2a$") || value.startsWith("$2b$") || value.startsWith("$2y$");
-    }
-
     @Override
     public Cashier registerCashier(CashierDTO cashierDTO) {
-        if (cashierRepository.existsByEmail(cashierDTO.getEmail())) {
+        cashierRepository.findByEmail(cashierDTO.getEmail()).ifPresent(cashier -> {
             throw new IllegalStateException("Email already in use");
-        }
-        if (cashierRepository.existsByCashierName(cashierDTO.getCashierName())) {
-            throw new IllegalStateException("Cashier name already in use");
-        }
+        });
 
         Cashier cashier = new Cashier();
         cashier.setCashierName(cashierDTO.getCashierName());
         cashier.setEmail(cashierDTO.getEmail());
-        cashier.setFullName(cashierDTO.getFullName()); // penting karena entity fullName NOT NULL
-
-        // ✅ HASH password
-        cashier.setPassword(passwordEncoder.encode(cashierDTO.getPassword()));
+        cashier.setFullName(cashierDTO.getFullName()); // ✅ penting karena entity fullName non-null
+        cashier.setPassword(passwordEncoder.encode(cashierDTO.getPassword())); // ✅ HASH
 
         cashier = cashierRepository.save(cashier);
 
         Cart cart = new Cart();
-        cart.setTotalPrice(0.0);
         cart.setCashier(cashier);
         cartRepository.save(cart);
 
         cashier.setCart(cart);
+
         return cashierRepository.save(cashier);
     }
 
     @Override
     @Transactional
     public Cashier registerCashierApp(CashierDTO cashierDTO) {
-        if (cashierRepository.existsByEmail(cashierDTO.getEmail())) {
+        cashierRepository.findByEmail(cashierDTO.getEmail()).ifPresent(cashier -> {
             throw new IllegalStateException("Email already in use");
-        }
-        if (cashierRepository.existsByCashierName(cashierDTO.getCashierName())) {
-            throw new IllegalStateException("Cashier name already in use");
-        }
+        });
 
         try {
             Cashier cashier = new Cashier();
             cashier.setCashierName(cashierDTO.getCashierName());
             cashier.setEmail(cashierDTO.getEmail());
             cashier.setFullName(cashierDTO.getFullName());
-
-            // ✅ HASH password
-            cashier.setPassword(passwordEncoder.encode(cashierDTO.getPassword()));
+            cashier.setPassword(passwordEncoder.encode(cashierDTO.getPassword())); // ✅ HASH
 
             // Simpan cashier dulu (supaya punya ID)
             cashier = cashierRepository.save(cashier);
@@ -111,7 +96,7 @@ public class CashierServiceImpl implements CashierService {
             return cashier;
         } catch (Exception e) {
             log.error("Error while registering cashier & creating cart", e);
-            throw e; // trigger rollback
+            throw e;
         }
     }
 
@@ -121,12 +106,12 @@ public class CashierServiceImpl implements CashierService {
                 .map(cashier -> {
                     String stored = cashier.getPassword();
 
-                    // ✅ normal: bcrypt
-                    if (isBcryptHash(stored)) {
+                    // ✅ kalau sudah bcrypt
+                    if (stored != null && stored.startsWith("$2")) {
                         return passwordEncoder.matches(password, stored);
                     }
 
-                    // ✅ kompatibilitas data lama plaintext (optional)
+                    // ✅ legacy: kalau masih plain, cocokkan dulu lalu upgrade jadi hash
                     boolean ok = stored != null && stored.equals(password);
                     if (ok) {
                         cashier.setPassword(passwordEncoder.encode(password));
@@ -170,14 +155,18 @@ public class CashierServiceImpl implements CashierService {
                 .id(cashier.getId())
                 .cashierName(cashier.getCashierName())
                 .email(cashier.getEmail())
-                .password(null) // ✅ jangan kirim password (meskipun hash) ke client
+                .password(null) // ✅ JANGAN KIRIM HASH KE CLIENT
                 .fullName(cashier.getFullName())
                 .profileImage(fullProfileImageUrl)
                 .build();
     }
 
     @Override
-    public void updateCashierProfile(Long cashierId, String cashierName, String email, String fullName, MultipartFile profileImage) throws IOException {
+    public void updateCashierProfile(Long cashierId,
+                                     String cashierName,
+                                     String email,
+                                     String fullName,
+                                     MultipartFile profileImage) throws IOException {
         Cashier cashier = cashierRepository.findById(cashierId)
                 .orElseThrow(() -> new IllegalArgumentException("Cashier not found"));
 
@@ -212,7 +201,36 @@ public class CashierServiceImpl implements CashierService {
     public void deleteCashierById(Long cashierId) {
         Cashier cashier = cashierRepository.findById(cashierId)
                 .orElseThrow(() -> new IllegalArgumentException("Cashier not found"));
-
         cashierRepository.delete(cashier);
+    }
+
+    // ✅ NEW: Change Password (Cashier)
+    @Override
+    @Transactional
+    public void changePassword(Long cashierId, String currentPassword, String newPassword) {
+        Cashier cashier = cashierRepository.findById(cashierId)
+                .orElseThrow(() -> new IllegalArgumentException("Cashier not found"));
+
+        String stored = cashier.getPassword();
+
+        boolean currentOk;
+        if (stored != null && stored.startsWith("$2")) {
+            currentOk = passwordEncoder.matches(currentPassword, stored);
+        } else {
+            // legacy plain
+            currentOk = stored != null && stored.equals(currentPassword);
+            if (currentOk) {
+                // upgrade legacy -> hash
+                cashier.setPassword(passwordEncoder.encode(currentPassword));
+                cashierRepository.save(cashier);
+            }
+        }
+
+        if (!currentOk) {
+            throw new IllegalArgumentException("Current password is incorrect");
+        }
+
+        cashier.setPassword(passwordEncoder.encode(newPassword));
+        cashierRepository.save(cashier);
     }
 }

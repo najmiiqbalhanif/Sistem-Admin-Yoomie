@@ -24,4 +24,7 @@ public interface CashierService {
     void deleteCashierById(Long cashierId);
 
     List<CashierDTO> getAllCashiers();
+
+    void changePassword(Long cashierId, String currentPassword, String newPassword);
+
 }

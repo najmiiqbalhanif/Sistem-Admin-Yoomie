@@ -1,7 +1,9 @@
 package com.yoomie.web.controllerREST;
 
 import com.yoomie.web.dto.CashierDTO;
+import com.yoomie.web.dto.ChangePasswordRequest;
 import com.yoomie.web.services.CashierService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +14,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/editprofilepage")
-@CrossOrigin(origins = "*") // Supaya bisa diakses dari Flutter
+@CrossOrigin(origins = "*")
 public class editProfilePageControllerREST {
 
     private final CashierService cashierService;
@@ -47,5 +49,20 @@ public class editProfilePageControllerREST {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    // ✅ NEW: Change password endpoint
+    @PutMapping(value = "/{cashierId}/password", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> changePassword(
+            @PathVariable Long cashierId,
+            @Valid @RequestBody ChangePasswordRequest req
+    ) {
+        if (!req.getNewPassword().equals(req.getConfirmPassword())) {
+            // kalau kamu punya GlobalExceptionHandler, boleh lempar IllegalArgumentException saja
+            return ResponseEntity.badRequest().body("Confirm password does not match");
+        }
+
+        cashierService.changePassword(cashierId, req.getCurrentPassword(), req.getNewPassword());
+        return ResponseEntity.ok("Password updated successfully");
     }
 }
