@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public interface CashierRepository extends JpaRepository<Cashier, Long> {
 
-    // Menambahkan method untuk mencari cashier berdasarkan email
     Optional<Cashier> findByEmail(String email);
+
+    boolean existsByEmail(String email);
+    boolean existsByCashierName(String cashierName);
 }
