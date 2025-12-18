@@ -152,7 +152,7 @@
                             <tr th:each="row : ${todayItemSummary}">
                                 <td th:text="${row.itemName}">Product Name</td>
                                 <td th:text="${row.itemSold}">0</td>
-                                <td th:text="${row.sales}">0.0</td>
+                                <td th:text="${'Rp ' + #numbers.formatDecimal(row.sales, 1, 'POINT', 0, 'COMMA')}"></td>
                             </tr>
 
                             <tr th:if="${todayItemSummary == null or #lists.isEmpty(todayItemSummary)}">
