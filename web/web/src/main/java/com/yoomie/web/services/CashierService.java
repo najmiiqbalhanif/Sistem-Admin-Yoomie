@@ -15,6 +15,8 @@ public interface CashierService {
 
     Cashier findByEmail(String email);
 
+    Cashier save(Cashier cashier);
+
     public Cashier getCashierById(Long id);
 
     public CashierDTO DTOgetCashierById(Long id);
@@ -23,7 +25,7 @@ public interface CashierService {
 
     void deleteCashierById(Long cashierId);
 
-    List<CashierDTO> getAllCashiers();
+    List<CashierDTO> getAllActiveCashiers();
 
     void changePassword(Long cashierId, String currentPassword, String newPassword);
 

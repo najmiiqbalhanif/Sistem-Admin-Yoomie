@@ -3,9 +3,9 @@ package com.yoomie.web.services.impl;
 import com.yoomie.web.dto.CashierDTO;
 import com.yoomie.web.models.Cashier;
 import com.yoomie.web.models.Cart;
-import com.yoomie.web.repositories.CartRepository;
-import com.yoomie.web.repositories.CashierRepository;
+import com.yoomie.web.repositories.*;
 import com.yoomie.web.services.CashierService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,7 +33,8 @@ public class CashierServiceImpl implements CashierService {
     @Autowired
     public CashierServiceImpl(CashierRepository cashierRepository,
                               CartRepository cartRepository,
-                              PasswordEncoder passwordEncoder) {
+                              PasswordEncoder passwordEncoder
+    ) {
         this.cashierRepository = cashierRepository;
         this.cartRepository = cartRepository;
         this.passwordEncoder = passwordEncoder;
@@ -102,16 +103,16 @@ public class CashierServiceImpl implements CashierService {
 
     @Override
     public boolean authenticateCashier(String email, String password) {
-        return cashierRepository.findByEmail(email)
+        return cashierRepository.findByEmailAndActiveTrue(email)
+                .filter(Cashier::getActive)
+
                 .map(cashier -> {
                     String stored = cashier.getPassword();
 
-                    // ✅ kalau sudah bcrypt
                     if (stored != null && stored.startsWith("$2")) {
                         return passwordEncoder.matches(password, stored);
                     }
 
-                    // ✅ legacy: kalau masih plain, cocokkan dulu lalu upgrade jadi hash
                     boolean ok = stored != null && stored.equals(password);
                     if (ok) {
                         cashier.setPassword(passwordEncoder.encode(password));
@@ -133,8 +134,8 @@ public class CashierServiceImpl implements CashierService {
     }
 
     @Override
-    public List<CashierDTO> getAllCashiers() {
-        return cashierRepository.findAll()
+    public List<CashierDTO> getAllActiveCashiers() {
+        return cashierRepository.findAllByActiveTrue()
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -200,11 +201,22 @@ public class CashierServiceImpl implements CashierService {
     @Transactional
     public void deleteCashierById(Long cashierId) {
         Cashier cashier = cashierRepository.findById(cashierId)
-                .orElseThrow(() -> new IllegalArgumentException("Cashier not found"));
-        cashierRepository.delete(cashier);
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Cashier not found: " + cashierId));
+
+        if (Boolean.TRUE.equals(cashier.getDeleted())) {
+            return; // sudah dihapus → tidak perlu apa-apa
+        }
+
+        cashier.setActive(false);
+        cashier.setDeleted(true);
+
+        cashier.setEmail(cashier.getEmail() + ".deleted." + cashier.getId());
     }
 
-    // ✅ NEW: Change Password (Cashier)
+
+
+    // Change Password (Cashier)
     @Override
     @Transactional
     public void changePassword(Long cashierId, String currentPassword, String newPassword) {
@@ -233,4 +245,10 @@ public class CashierServiceImpl implements CashierService {
         cashier.setPassword(passwordEncoder.encode(newPassword));
         cashierRepository.save(cashier);
     }
+
+    @Override
+    public Cashier save(Cashier cashier) {
+        return cashierRepository.save(cashier);
+    }
+
 }

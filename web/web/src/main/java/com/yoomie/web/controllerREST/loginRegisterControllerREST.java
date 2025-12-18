@@ -3,6 +3,7 @@ package com.yoomie.web.controllerREST;
 import com.yoomie.web.dto.LoginResponseDTO;
 import com.yoomie.web.dto.CashierDTO;
 import com.yoomie.web.models.Cashier;
+import com.yoomie.web.security.JwtService;
 import com.yoomie.web.services.CashierService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,12 @@ import jakarta.validation.Valid;
 public class loginRegisterControllerREST {
 
     private final CashierService cashierService;
+    private final JwtService jwtService;
 
-    public loginRegisterControllerREST(CashierService cashierService) {
+    public loginRegisterControllerREST(CashierService cashierService,
+                                       JwtService jwtService ) {
         this.cashierService = cashierService;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/register")
@@ -32,27 +36,30 @@ public class loginRegisterControllerREST {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginCashier(@RequestBody CashierDTO cashierDTO, HttpSession session) {
-        boolean isAuthenticated = cashierService.authenticateCashier(cashierDTO.getEmail(), cashierDTO.getPassword());
-        if (isAuthenticated) {
-            Cashier cashier = cashierService.findByEmail(cashierDTO.getEmail());
-            if (cashier != null) {
-                session.setAttribute("cashierId", cashier.getId());
+        boolean isAuthenticated = cashierService.authenticateCashier(
+                cashierDTO.getEmail(), cashierDTO.getPassword()
+        );
 
-                // Buat DTO untuk response
-                LoginResponseDTO loginResponse = new LoginResponseDTO(
-                        cashier.getId(),
-                        cashier.getCashierName(),
-                        cashier.getEmail(),
-                        cashier.getFullName(),
-                        cashier.getProfileImage()
-                );
-
-                return ResponseEntity.ok(loginResponse);
-            }
+        if (!isAuthenticated) {
+            return ResponseEntity.status(401).body("Invalid email or password");
         }
-        return ResponseEntity.status(401).body("Invalid email or password");
-    }
 
+        Cashier cashier = cashierService.findByEmail(cashierDTO.getEmail());
+        session.setAttribute("cashierId", cashier.getId());
+
+        String token = jwtService.generateToken(cashier.getEmail());
+
+        LoginResponseDTO loginResponse = new LoginResponseDTO(
+                cashier.getId(),
+                cashier.getCashierName(),
+                cashier.getEmail(),
+                cashier.getFullName(),
+                cashier.getProfileImage(),
+                token
+        );
+
+        return ResponseEntity.ok(loginResponse);
+    }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logoutCashier(HttpSession session) {

@@ -25,18 +25,22 @@
         @Column(nullable = false)
         private String fullName;
 
-        @Column(name = "profile_image")
-        private String profileImage; // Bisa disimpan path ke file atau URL
+        @Column(nullable = false)
+        private Boolean active = true;
 
-        // Relasi ke Cart (satu cashier memiliki satu keranjang)
-        @OneToOne(mappedBy = "cashier", cascade = CascadeType.ALL, orphanRemoval = true)
-        @EqualsAndHashCode.Exclude // Mencegah infinite recursion
+        @Column(nullable = false)
+        private Boolean deleted = false;
+
+        @Column(name = "profile_image")
+        private String profileImage;
+
+        @OneToOne(mappedBy = "cashier")
+        @EqualsAndHashCode.Exclude
         @ToString.Exclude
         private Cart cart;
 
-        // Relasi ke Transaction (satu cashier bisa memiliki banyak pesanan)
-        @OneToMany(mappedBy = "cashier", cascade = CascadeType.ALL, orphanRemoval = true)
-        @EqualsAndHashCode.Exclude // Mencegah infinite recursion
+        @OneToMany(mappedBy = "cashier")
+        @EqualsAndHashCode.Exclude
         @ToString.Exclude
         private List<Transaction> transactions;
     }
