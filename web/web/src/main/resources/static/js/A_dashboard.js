@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const I18N = window.I18N || {
+    // Ini BUKAN i18n bundle, hanya konstanta teks untuk JS
+    const I18N = {
         loading: 'Loading...',
         noStockLogs: 'No stock logs yet.',
         cannotLoad: 'Unable to load data.',
@@ -8,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
         statusUpdateFailed: 'Failed to update status.'
     };
 
-    // ========= 1) SIDEBAR TAB NAVIGATION (keeps ?section + keeps ?lang) =========
+    // ========= 1) SIDEBAR TAB NAVIGATION (keeps ?section only) =========
     const dashboardLinks = document.querySelectorAll('.dashboard-link');
     const contentDashboard = document.querySelectorAll('.content-dashboard');
 
@@ -26,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (link) link.classList.add('active');
         if (content) content.style.display = 'block';
 
-        // Update URL without reload, keep other params (like lang)
+        // Update URL without reload, keep other params (kecuali tidak ada lang)
         const url = new URL(window.location.href);
         url.searchParams.set('section', sectionName);
         window.history.replaceState({}, '', url);
@@ -66,19 +67,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ========= 3) LANGUAGE SWITCH (Modal Apply) =========
-    const btnApplyLanguage = document.getElementById('btnApplyLanguage');
-    if (btnApplyLanguage) {
-        btnApplyLanguage.addEventListener('click', () => {
-            const checked = document.querySelector('input[name="langOption"]:checked');
-            const lang = checked ? checked.value : 'en';
-
-            const url = new URL(window.location.href);
-            url.searchParams.set('lang', lang);      // switch language
-            // keep section param already set by tabs
-            window.location.href = url.toString();   // reload so Thymeleaf re-renders texts
-        });
-    }
+    // ========= 3) (REMOVED) LANGUAGE SWITCH =========
+    // Karena non-i18n, bagian ini dihapus.
 
     // ========= 4) CONFIRM SUBMIT (Delete forms) =========
     document.querySelectorAll('form.form-confirm').forEach(form => {
@@ -101,23 +91,35 @@ document.addEventListener('DOMContentLoaded', function () {
             const productPrice = this.getAttribute('data-price');
             const productStock = this.getAttribute('data-stock');
 
-            document.getElementById('editProductId').value = productId;
-            document.getElementById('editProductName').value = productName;
-            document.getElementById('editProductBrand').value = productBrand;
-            document.getElementById('editProductCategory').value = productCategory;
-            document.getElementById('editProductPrice').value = productPrice;
-            document.getElementById('editProductStock').value = productStock;
+            const elId = document.getElementById('editProductId');
+            const elName = document.getElementById('editProductName');
+            const elBrand = document.getElementById('editProductBrand');
+            const elCategory = document.getElementById('editProductCategory');
+            const elPrice = document.getElementById('editProductPrice');
+            const elStock = document.getElementById('editProductStock');
+
+            if (elId) elId.value = productId || '';
+            if (elName) elName.value = productName || '';
+            if (elBrand) elBrand.value = productBrand || '';
+            if (elCategory) elCategory.value = productCategory || '';
+            if (elPrice) elPrice.value = productPrice || '';
+            if (elStock) elStock.value = productStock || '';
 
             const previewPhoto = document.getElementById('previewProductPhoto');
-            if (productPhoto) {
-                previewPhoto.src = productPhoto;
-                previewPhoto.style.display = 'block';
-            } else {
-                previewPhoto.style.display = 'none';
+            if (previewPhoto) {
+                if (productPhoto) {
+                    previewPhoto.src = productPhoto;
+                    previewPhoto.style.display = 'block';
+                } else {
+                    previewPhoto.style.display = 'none';
+                    previewPhoto.src = '';
+                }
             }
 
             const form = document.getElementById('editProductForm');
-            form.setAttribute('action', '/A_dashboard/editProd/' + productId);
+            if (form && productId) {
+                form.setAttribute('action', '/A_dashboard/editProd/' + productId);
+            }
         });
     });
 
@@ -128,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!input || !img) return;
 
         input.addEventListener('change', function (event) {
-            const file = event.target.files[0];
+            const file = event.target.files && event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
@@ -138,6 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 reader.readAsDataURL(file);
             } else {
                 img.style.display = 'none';
+                img.src = '';
             }
         });
     }
@@ -152,6 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.btn-cart').forEach(button => {
         button.addEventListener('click', function () {
             const transactionId = button.getAttribute('data-transaction-id');
+            if (!transactionId) return;
 
             fetch(`/A_dashboard/${transactionId}/paymentItems`)
                 .then(response => {
@@ -160,17 +164,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .then(paymentItems => {
                     const paymentItemsTable = document.getElementById('paymentItemsTable');
+                    if (!paymentItemsTable) return;
+
                     paymentItemsTable.innerHTML = '';
 
-                    paymentItems.forEach(item => {
+                    (paymentItems || []).forEach(item => {
                         const row = `
-                            <tr>
-                                <td>${item.productName}</td>
-                                <td>${item.quantity}</td>
-                                <td>${item.price}</td>
-                                <td>${item.subTotal}</td>
-                            </tr>
-                        `;
+              <tr>
+                <td>${item.productName ?? ''}</td>
+                <td>${item.quantity ?? ''}</td>
+                <td>${item.price ?? ''}</td>
+                <td>${item.subTotal ?? ''}</td>
+              </tr>
+            `;
                         paymentItemsTable.insertAdjacentHTML('beforeend', row);
                     });
                 })
@@ -183,6 +189,8 @@ document.addEventListener('DOMContentLoaded', function () {
         dropdown.addEventListener('change', function () {
             const transactionId = this.getAttribute('data-transaction-id');
             const newStatus = this.value;
+
+            if (!transactionId) return;
 
             fetch(`/A_dashboard/updateStatus/${transactionId}`, {
                 method: 'PUT',
@@ -209,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const nameCell = row.querySelector('td:nth-child(1)');
                 if (!nameCell) return;
 
-                const nameText = nameCell.textContent.toLowerCase();
+                const nameText = (nameCell.textContent || '').toLowerCase();
                 row.style.display = (query === '' || nameText.includes(query)) ? '' : 'none';
             });
         });
@@ -220,6 +228,8 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', function () {
             const productId = button.getAttribute('data-product-id');
             const productName = button.getAttribute('data-product-name');
+
+            if (!productId) return;
 
             const nameEl = document.getElementById('stockLogProductName');
             if (nameEl) nameEl.textContent = productName || '-';
@@ -234,10 +244,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (tbody) {
                 tbody.innerHTML = `
-                    <tr>
-                        <td colspan="4" class="text-muted small text-center">${I18N.loading}</td>
-                    </tr>
-                `;
+          <tr>
+            <td colspan="4" class="text-muted small text-center">${I18N.loading}</td>
+          </tr>
+        `;
             }
 
             fetch(`/A_dashboard/stockLogs/${productId}`)
@@ -250,10 +260,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     if (!logs || logs.length === 0) {
                         tbody.innerHTML = `
-                            <tr>
-                                <td colspan="4" class="text-muted small text-center">${I18N.noStockLogs}</td>
-                            </tr>
-                        `;
+              <tr>
+                <td colspan="4" class="text-muted small text-center">${I18N.noStockLogs}</td>
+              </tr>
+            `;
                         return;
                     }
 
@@ -263,6 +273,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         const createdOn = log.createdOn || log.createdAt || '-';
                         const oldStock = (log.oldStock ?? '-');
                         const newStock = (log.newStock ?? '-');
+
                         const diff = (log.diff ?? (typeof oldStock === 'number' && typeof newStock === 'number'
                             ? (newStock - oldStock)
                             : '-'));
@@ -274,13 +285,13 @@ document.addEventListener('DOMContentLoaded', function () {
                             : `<span class="badge bg-secondary">${diff}</span>`;
 
                         const row = `
-                            <tr>
-                                <td>${createdOn}</td>
-                                <td>${oldStock}</td>
-                                <td>${newStock}</td>
-                                <td>${diffBadge}</td>
-                            </tr>
-                        `;
+              <tr>
+                <td>${createdOn}</td>
+                <td>${oldStock}</td>
+                <td>${newStock}</td>
+                <td>${diffBadge}</td>
+              </tr>
+            `;
                         tbody.insertAdjacentHTML('beforeend', row);
                     });
                 })
@@ -289,10 +300,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     if (tbody) {
                         tbody.innerHTML = `
-                            <tr>
-                                <td colspan="4" class="text-muted small text-center">${I18N.cannotLoad}</td>
-                            </tr>
-                        `;
+              <tr>
+                <td colspan="4" class="text-muted small text-center">${I18N.cannotLoad}</td>
+              </tr>
+            `;
                     }
 
                     if (errBox) {
