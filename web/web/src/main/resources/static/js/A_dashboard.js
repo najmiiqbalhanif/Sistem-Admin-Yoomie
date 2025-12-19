@@ -89,7 +89,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // ========= 5) EDIT PRODUCT MODAL FILL + PREVIEW =========
-    document.querySelectorAll('.button-editProd').forEach(button => {
+    const editButtons = document.querySelectorAll('.button-editProd');
+
+    editButtons.forEach(button => {
         button.addEventListener('click', function () {
             const productId = this.getAttribute('data-id');
             const productPhoto = this.getAttribute('data-photo');
@@ -119,24 +121,32 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    const editPhotoInput = document.getElementById('editProductPhoto');
-    const previewPhoto = document.getElementById('previewProductPhoto');
-    if (editPhotoInput && previewPhoto) {
-        editPhotoInput.addEventListener('change', function (event) {
-            const file = event.target.files[0];
-            if (!file) {
-                previewPhoto.style.display = 'none';
-                return;
-            }
+    // ==== PREVIEW FOTO (ADD + EDIT) ====
+    function initImagePreview(inputId, imgId) {
+        const input = document.getElementById(inputId);
+        const img = document.getElementById(imgId);
+        if (!input || !img) return;
 
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                previewPhoto.src = e.target.result;
-                previewPhoto.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
+        input.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                img.style.display = 'none';
+            }
         });
     }
+
+    // preview untuk ADD NEW PRODUCT
+    initImagePreview('productPhoto', 'previewNewProductPhoto');
+
+    // preview untuk EDIT PRODUCT (saat user ganti foto)
+    initImagePreview('editProductPhoto', 'previewProductPhoto');
 
     // ========= 6) CART MODAL: Fetch payment items =========
     document.querySelectorAll('.btn-cart').forEach(button => {
