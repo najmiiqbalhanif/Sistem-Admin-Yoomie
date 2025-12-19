@@ -172,47 +172,79 @@
     color: #9ca3af;
 }
 
+/* ===== VALIDATION STATES (lebih mirip contoh kamu) ===== */
 .auth-input.is-invalid {
     border-color: #dc3545 !important;
-    box-shadow: none !important;
+    background-color: #fff5f5 !important;
+}
+
+.auth-input.is-invalid:focus {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.18) !important; /* glow merah */
 }
 
 .auth-input.is-valid {
     border-color: #198754 !important;
-    box-shadow: none !important;
+    background-color: #f6fffb !important;
 }
 
-.pw-wrap{
+.auth-input.is-valid:focus {
+    border-color: #198754 !important;
+    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.14) !important;
+}
+
+/* =========================================================
+   PASSWORD WRAP (ICON SERU + ICON MATA)
+   ========================================================= */
+.pw-wrap {
     position: relative;
 }
 
-.pw-input{
-    padding-right: 44px; /* ruang untuk icon */
+/* input butuh ruang untuk 2 ikon */
+.pw-input {
+    padding-right: 92px !important;
 }
 
-.pw-toggle{
+/* container ikon di kanan */
+.pw-actions {
     position: absolute;
-    right: 10px;
+    right: 12px;
     top: 50%;
     transform: translateY(-50%);
-    border: 0;
-    background: transparent;
-    padding: 6px;
-    color: #6b7280;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
     z-index: 10;
-    cursor: pointer;
-    pointer-events: auto;
 }
 
-.pw-toggle:focus{
+/* ikon seru */
+.pw-error {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #dc3545; /* merah */
+    font-size: 18px;
+    line-height: 1;
+}
+
+/* tombol mata */
+.pw-toggle {
+    border: 0;
+    background: transparent;
+    padding: 2px;
+    color: #6b7280;
+    cursor: pointer;
+    line-height: 0;
+}
+
+.pw-toggle:focus {
     outline: none;
     box-shadow: none;
 }
 
-.pw-toggle:hover{
+.pw-toggle:hover {
     color: #111827;
 }
-
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 991.98px) {
@@ -224,4 +256,23 @@
         border-radius: 22px 22px 0 0;
         min-height: 220px;
     }
+}
+
+/* ===== FIX: matikan icon validasi bawaan Bootstrap (biar nggak dobel) ===== */
+.auth-input.is-invalid,
+.auth-input.is-valid {
+    background-image: none !important;   /* ini yang bikin icon bootstrap hilang */
+}
+
+/* ===== FIX: kalau masih ada CSS lama yang bikin .pw-toggle absolute, paksa jadi normal ===== */
+.pw-toggle {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    transform: none !important;
+}
+
+/* Opsional: rapikan jarak antar icon */
+.pw-actions {
+    gap: 12px;
 }

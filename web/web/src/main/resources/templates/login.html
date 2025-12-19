@@ -11,7 +11,7 @@
         integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
         crossorigin="anonymous">
 
-  <!-- CSS Lokal -->
+  <!-- Local CSS -->
   <link rel="stylesheet" th:href="@{/css/loginregister.css}">
 
   <!-- Google Fonts -->
@@ -30,30 +30,37 @@
           <span class="brand-dot"></span>
           <span class="brand-text">Yoomie Admin</span>
         </div>
-        <div class="justify-content-center ">
-          <img src="img/logoYoomie.svg" style="height: 230px; width: 250px">
+
+        <div class="justify-content-center">
+          <img src="img/logoYoomie.svg" style="height: 230px; width: 250px" alt="Yoomie Logo">
         </div>
-        <h2 class="auth-left-title mb-3 ">
-          Kontrol toko dari<br>dashboard admin.
+
+        <h2 class="auth-left-title mb-3">
+          Control your store<br>from the admin dashboard.
         </h2>
+
         <p class="auth-left-subtitle mb-0">
-          Pantau transaksi, kelola stok, dan atur kasir dalam satu panel
-          yang terpusat dan aman.
+          Monitor transactions, manage inventory, and organize cashiers in one
+          centralized and secure panel.
         </p>
       </div>
-<!--      <div class="auth-illustration mt-4">-->
-<!--        &lt;!&ndash; logo admin terbaru &ndash;&gt;-->
-<!--        <img src="img/mini-logo.svg" alt="Yoomie Admin Logo" class="img-fluid auth-logo">-->
-<!--      </div>-->
+
+      <!--
+      <div class="auth-illustration mt-4">
+        <img src="img/mini-logo.svg" alt="Yoomie Admin Logo" class="img-fluid auth-logo">
+      </div>
+      -->
     </div>
 
     <!-- RIGHT PANEL -->
     <div class="col-lg-7 auth-right p-4 p-lg-5">
       <div class="mb-4">
         <h3 class="auth-title mb-2">Admin Login</h3>
+
         <p class="auth-subtitle mb-0">
-          Masuk untuk mengelola Yoomie store dari dashboard admin.
+          Sign in to manage your Yoomie store from the admin dashboard.
         </p>
+
         <p class="auth-subtitle mt-1">
           Not registered yet?
           <a href="/register" class="auth-link">Sign up</a>
@@ -67,7 +74,7 @@
                  id="email"
                  name="email"
                  class="form-control auth-input"
-                 placeholder="admin@tokoanda.com"
+                 placeholder="admin@yourstore.com"
                  aria-label="Email"
                  autocomplete="email">
         </div>
@@ -78,7 +85,7 @@
                  id="password"
                  name="password"
                  class="form-control auth-input"
-                 placeholder="Masukkan password"
+                 placeholder="Enter your password"
                  aria-label="Password"
                  autocomplete="current-password">
         </div>
@@ -90,11 +97,12 @@
               Remember me
             </label>
           </div>
-          <!-- optional: lupa password kalau nanti ada fitur -->
+
+          <!-- Optional: forgot password (when the feature exists) -->
           <a href="#" class="auth-link-small">Forgot password?</a>
         </div>
 
-        <!-- box error lebih rapi dibanding alert -->
+        <!-- Error box (cleaner than alert) -->
         <div id="errorMessage" class="auth-error d-none"></div>
 
         <button type="submit" class="btn auth-btn w-100 mt-2">
@@ -111,7 +119,7 @@
 
 <script>
   document.getElementById('loginForm').addEventListener('submit', function (event) {
-    event.preventDefault(); // mencegah reload halaman biasa
+    event.preventDefault(); // Prevent page reload
 
     const formData = {
       email: document.querySelector('[name="email"]').value,
@@ -132,15 +140,15 @@
             .then((response) => {
               if (!response.ok) {
                 return response.text().then((text) => {
-                  throw new Error(text || 'Login gagal, periksa kembali email dan password.');
+                  throw new Error(text || 'Login failed. Please check your email and password.');
                 });
               }
               return response.text();
             })
             .then((message) => {
-              // kalau mau, message bisa ditampilkan sebentar di errorBox/successBox
+              // Optional: show message briefly in an errorBox / successBox
               console.log(message);
-              window.location.href = '/A_dashboard'; // redirect ke dashboard admin
+              window.location.href = '/A_dashboard'; // Redirect to admin dashboard
             })
             .catch((error) => {
               errorBox.textContent = error.message;

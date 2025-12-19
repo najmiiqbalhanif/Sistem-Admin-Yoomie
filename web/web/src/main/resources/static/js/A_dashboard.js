@@ -1,76 +1,104 @@
-// JS Sidebar pada dashboard Admin
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+    const I18N = window.I18N || {
+        loading: 'Loading...',
+        noStockLogs: 'No stock logs yet.',
+        cannotLoad: 'Unable to load data.',
+        errorGeneric: 'An error occurred.',
+        statusUpdated: 'Status updated successfully!',
+        statusUpdateFailed: 'Failed to update status.'
+    };
+
+    // ========= 1) SIDEBAR TAB NAVIGATION (keeps ?section + keeps ?lang) =========
     const dashboardLinks = document.querySelectorAll('.dashboard-link');
     const contentDashboard = document.querySelectorAll('.content-dashboard');
 
-    // Sembunyikan semua konten dulu
-    contentDashboard.forEach(content => {
-        content.style.display = 'none';
-    });
+    function hideAllSections() {
+        contentDashboard.forEach(content => (content.style.display = 'none'));
+        dashboardLinks.forEach(link => link.classList.remove('active'));
+    }
 
-    // Cek query param ?section=..., kalau ada pakai itu sebagai tab awal
-    let defaultDashboard = 'dashboard';
+    function showSection(sectionName) {
+        hideAllSections();
+
+        const link = document.querySelector(`.dashboard-link[menu-dashboard="${sectionName}"]`);
+        const content = document.querySelector(`.${sectionName}`);
+
+        if (link) link.classList.add('active');
+        if (content) content.style.display = 'block';
+
+        // Update URL without reload, keep other params (like lang)
+        const url = new URL(window.location.href);
+        url.searchParams.set('section', sectionName);
+        window.history.replaceState({}, '', url);
+    }
+
+    // init
+    hideAllSections();
     const params = new URLSearchParams(window.location.search);
-    const sectionFromUrl = params.get('section');
-
-    if (sectionFromUrl) {
-        defaultDashboard = sectionFromUrl; // misal: 'library'
-    }
-
-    const defaultLink = document.querySelector(`.dashboard-link[menu-dashboard="${defaultDashboard}"]`);
-    const defaultContent = document.querySelector(`.${defaultDashboard}`);
-
-    if (defaultLink) {
-        defaultLink.classList.add('active');
-    }
-    if (defaultContent) {
-        defaultContent.style.display = 'block';
-    }
+    const sectionFromUrl = params.get('section') || 'dashboard';
+    showSection(sectionFromUrl);
 
     dashboardLinks.forEach(link => {
         link.addEventListener('click', () => {
             const selectedMenu = link.getAttribute('menu-dashboard');
-
-            // Hapus active dari semua link
-            dashboardLinks.forEach(link => link.classList.remove('active'));
-
-            // Set active ke link yang diklik
-            link.classList.add('active');
-
-            // Sembunyikan semua konten
-            contentDashboard.forEach(content => {
-                content.style.display = 'none';
-            });
-
-            // Tampilkan konten sesuai tab yang dipilih
-            const activeContent = document.querySelector(`.${selectedMenu}`);
-            if (activeContent) {
-                activeContent.style.display = 'block';
-            }
-
-            // UPDATE URL TANPA RELOAD: set ?section=namaTab
-            const url = new URL(window.location);
-            url.searchParams.set('section', selectedMenu);
-            window.history.replaceState({}, '', url);
+            showSection(selectedMenu);
         });
     });
-});
 
-// JS untuk button edit product pada library dashboard admin
-document.addEventListener('DOMContentLoaded', function () {
-    const editButtons = document.querySelectorAll('.button-editProd');
+    // ========= 2) TOPBAR USER DROPDOWN =========
+    const userToggle = document.getElementById('topbarUser');
+    if (userToggle) {
+        const userMenu = userToggle.querySelector('.topbar-user-menu');
 
-    editButtons.forEach(button => {
+        userToggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            userToggle.classList.toggle('open');
+        });
+
+        if (userMenu) {
+            userMenu.addEventListener('click', function (e) {
+                e.stopPropagation();
+            });
+        }
+
+        document.addEventListener('click', function () {
+            userToggle.classList.remove('open');
+        });
+    }
+
+    // ========= 3) LANGUAGE SWITCH (Modal Apply) =========
+    const btnApplyLanguage = document.getElementById('btnApplyLanguage');
+    if (btnApplyLanguage) {
+        btnApplyLanguage.addEventListener('click', () => {
+            const checked = document.querySelector('input[name="langOption"]:checked');
+            const lang = checked ? checked.value : 'en';
+
+            const url = new URL(window.location.href);
+            url.searchParams.set('lang', lang);      // switch language
+            // keep section param already set by tabs
+            window.location.href = url.toString();   // reload so Thymeleaf re-renders texts
+        });
+    }
+
+    // ========= 4) CONFIRM SUBMIT (Delete forms) =========
+    document.querySelectorAll('form.form-confirm').forEach(form => {
+        form.addEventListener('submit', (e) => {
+            const msg = form.dataset.confirm || 'Are you sure?';
+            if (!confirm(msg)) e.preventDefault();
+        });
+    });
+
+    // ========= 5) EDIT PRODUCT MODAL FILL + PREVIEW =========
+    document.querySelectorAll('.button-editProd').forEach(button => {
         button.addEventListener('click', function () {
             const productId = this.getAttribute('data-id');
-            const productPhoto = this.getAttribute('data-photo'); // Pastikan atribut data-photo sudah diisi
+            const productPhoto = this.getAttribute('data-photo');
             const productName = this.getAttribute('data-name');
             const productBrand = this.getAttribute('data-brand');
             const productCategory = this.getAttribute('data-category');
             const productPrice = this.getAttribute('data-price');
             const productStock = this.getAttribute('data-stock');
 
-            // Isi modal dengan data produk
             document.getElementById('editProductId').value = productId;
             document.getElementById('editProductName').value = productName;
             document.getElementById('editProductBrand').value = productBrand;
@@ -78,61 +106,52 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('editProductPrice').value = productPrice;
             document.getElementById('editProductStock').value = productStock;
 
-            // Atur pratinjau gambar berdasarkan data-photo
             const previewPhoto = document.getElementById('previewProductPhoto');
             if (productPhoto) {
-                previewPhoto.src = productPhoto; // Path URL gambar dari server
-                previewPhoto.style.display = 'block'; // Tampilkan pratinjau
+                previewPhoto.src = productPhoto;
+                previewPhoto.style.display = 'block';
             } else {
-                previewPhoto.style.display = 'none'; // Sembunyikan jika tidak ada foto
+                previewPhoto.style.display = 'none';
             }
 
-            // Atur URL action pada form
             const form = document.getElementById('editProductForm');
             form.setAttribute('action', '/A_dashboard/editProd/' + productId);
         });
     });
 
-    // Tambahkan event listener untuk preview foto baru jika input file berubah
     const editPhotoInput = document.getElementById('editProductPhoto');
     const previewPhoto = document.getElementById('previewProductPhoto');
+    if (editPhotoInput && previewPhoto) {
+        editPhotoInput.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (!file) {
+                previewPhoto.style.display = 'none';
+                return;
+            }
 
-    editPhotoInput.addEventListener('change', function (event) {
-        const file = event.target.files[0];
-        if (file) {
             const reader = new FileReader();
             reader.onload = function (e) {
-                previewPhoto.src = e.target.result; // Gunakan data URL untuk pratinjau
-                previewPhoto.style.display = 'block'; // Tampilkan pratinjau
+                previewPhoto.src = e.target.result;
+                previewPhoto.style.display = 'block';
             };
-            reader.readAsDataURL(file); // Membaca file
-        } else {
-            previewPhoto.style.display = 'none'; // Sembunyikan pratinjau jika input kosong
-        }
-    });
-});
+            reader.readAsDataURL(file);
+        });
+    }
 
-document.addEventListener('DOMContentLoaded', function () {
-    const cartButtons = document.querySelectorAll('.btn-cart');
-
-    cartButtons.forEach(button => {
+    // ========= 6) CART MODAL: Fetch payment items =========
+    document.querySelectorAll('.btn-cart').forEach(button => {
         button.addEventListener('click', function () {
             const transactionId = button.getAttribute('data-transaction-id');
 
-            // Tambahkan URL yang sesuai dengan endpoint
             fetch(`/A_dashboard/${transactionId}/paymentItems`)
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json(); // Konversi ke JSON
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return response.json();
                 })
                 .then(paymentItems => {
-                    // Kosongkan tabel sebelum menambahkan data baru
                     const paymentItemsTable = document.getElementById('paymentItemsTable');
                     paymentItemsTable.innerHTML = '';
 
-                    // Tambahkan item ke tabel
                     paymentItems.forEach(item => {
                         const row = `
                             <tr>
@@ -148,9 +167,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 .catch(error => console.error('Error fetching payment items:', error));
         });
     });
-});
 
-document.addEventListener('DOMContentLoaded', function () {
+    // ========= 7) STATUS DROPDOWN (if exists) =========
     document.querySelectorAll('.status-dropdown').forEach(dropdown => {
         dropdown.addEventListener('change', function () {
             const transactionId = this.getAttribute('data-transaction-id');
@@ -158,83 +176,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
             fetch(`/A_dashboard/updateStatus/${transactionId}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus })
             })
                 .then(response => {
-                    if (response.ok) {
-                        alert('Status updated successfully!');
-                    } else {
-                        alert('Failed to update status.');
-                    }
+                    if (response.ok) alert(I18N.statusUpdated);
+                    else alert(I18N.statusUpdateFailed);
                 })
                 .catch(error => console.error('Error:', error));
         });
     });
-});
 
-document.addEventListener('DOMContentLoaded', function () {
-    // Toggle dropdown user di topbar
-    const userToggle = document.querySelector('.topbar-user');
-
-    if (userToggle) {
-        const userMenu = userToggle.querySelector('.topbar-user-menu');
-
-        // klik avatar/nama → buka/tutup
-        userToggle.addEventListener('click', function (e) {
-            e.stopPropagation();
-            userToggle.classList.toggle('open');
-        });
-
-        // biar klik di dalam menu gak nutup
-        if (userMenu) {
-            userMenu.addEventListener('click', function (e) {
-                e.stopPropagation();
-            });
-        }
-
-        // klik di luar → tutup
-        document.addEventListener('click', function () {
-            userToggle.classList.remove('open');
-        });
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-
-    // SEARCH LIBRARY
+    // ========= 8) SEARCH LIBRARY =========
     const searchInput = document.getElementById('librarySearchInput');
     const libraryTable = document.getElementById('libraryTable');
-
     if (searchInput && libraryTable) {
-        const rows = libraryTable.querySelectorAll('tbody tr');
-
         searchInput.addEventListener('input', function () {
             const query = this.value.trim().toLowerCase();
+            const rows = libraryTable.querySelectorAll('tbody tr');
 
-            rows.forEach(function (row) {
-                const nameCell = row.querySelector('td:nth-child(1)'); // kolom Name
+            rows.forEach(row => {
+                const nameCell = row.querySelector('td:nth-child(1)');
                 if (!nameCell) return;
 
                 const nameText = nameCell.textContent.toLowerCase();
-
-                // contains match (substring, case-insensitive)
-                if (query === '' || nameText.includes(query)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+                row.style.display = (query === '' || nameText.includes(query)) ? '' : 'none';
             });
         });
     }
-});
 
-document.addEventListener('DOMContentLoaded', function () {
-    const stockLogButtons = document.querySelectorAll('.button-stockLogs');
-
-    stockLogButtons.forEach(button => {
+    // ========= 9) STOCK LOGS MODAL =========
+    document.querySelectorAll('.button-stockLogs').forEach(button => {
         button.addEventListener('click', function () {
             const productId = button.getAttribute('data-product-id');
             const productName = button.getAttribute('data-product-name');
@@ -249,19 +221,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 errBox.classList.add('d-none');
                 errBox.textContent = '';
             }
+
             if (tbody) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="5" class="text-muted small text-center">Loading...</td>
+                        <td colspan="4" class="text-muted small text-center">${I18N.loading}</td>
                     </tr>
                 `;
             }
 
             fetch(`/A_dashboard/stockLogs/${productId}`)
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     return response.json();
                 })
                 .then(logs => {
@@ -270,7 +241,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (!logs || logs.length === 0) {
                         tbody.innerHTML = `
                             <tr>
-                                <td colspan="5" class="text-muted small text-center">Belum ada log stok.</td>
+                                <td colspan="4" class="text-muted small text-center">${I18N.noStockLogs}</td>
                             </tr>
                         `;
                         return;
@@ -282,7 +253,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         const createdOn = log.createdOn || log.createdAt || '-';
                         const oldStock = (log.oldStock ?? '-');
                         const newStock = (log.newStock ?? '-');
-                        const diff = (log.diff ?? (typeof oldStock === 'number' && typeof newStock === 'number' ? (newStock - oldStock) : '-'));
+                        const diff = (log.diff ?? (typeof oldStock === 'number' && typeof newStock === 'number'
+                            ? (newStock - oldStock)
+                            : '-'));
 
                         const diffBadge = (typeof diff === 'number')
                             ? (diff >= 0
@@ -307,13 +280,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (tbody) {
                         tbody.innerHTML = `
                             <tr>
-                                <td colspan="5" class="text-muted small text-center">Tidak bisa memuat data.</td>
+                                <td colspan="4" class="text-muted small text-center">${I18N.cannotLoad}</td>
                             </tr>
                         `;
                     }
 
                     if (errBox) {
-                        errBox.textContent = error.message || 'Terjadi kesalahan';
+                        errBox.textContent = error.message || I18N.errorGeneric;
                         errBox.classList.remove('d-none');
                     }
                 });
