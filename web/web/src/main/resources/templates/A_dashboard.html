@@ -230,9 +230,8 @@
                                 <th th:text="#{table.cashierName}">Cashier Name</th>
                                 <th th:text="#{table.transactionDate}">Transaction Date</th>
                                 <th th:text="#{table.cart}">Cart</th>
-                                <th th:text="#{table.amount}">Amount</th>
+                                <th th:text="#{table.amount}">Amount (Rp)</th>
                                 <th th:text="#{table.paymentMethod}">Payment Method</th>
-                                <th th:text="#{table.action}">Action</th>
                             </tr>
                             </thead>
                             <tbody th:each="transaction : ${transactions}">
@@ -250,9 +249,6 @@
                                 </td>
                                 <td th:text="${transaction.getTotalAmount()}"></td>
                                 <td th:text="${transaction.getPaymentMethod()}"></td>
-                                <td>
-                                    <button class="btn btn-light btn-sm" th:text="#{action.details}">Details</button>
-                                </td>
                             </tr>
                             </tbody>
                         </table>
