@@ -25,6 +25,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductStockLogRepository productStockLogRepository;
 
     private static final String UPLOAD_DIR = "web/web/src/main/resources/static/storage/";
+    //private static final String BASE_IMAGE_URL = "http://10.0.2.2:8080/";
 
     @Autowired
     public ProductServiceImpl(ProductRepository productRepository,
