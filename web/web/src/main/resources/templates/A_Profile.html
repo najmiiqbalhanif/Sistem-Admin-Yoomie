@@ -13,7 +13,7 @@
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-  <!-- CSS dashboard -->
+  <!-- Dashboard CSS -->
   <link rel="stylesheet" th:href="@{/css/A_dashboard.css}">
 
   <!-- Fonts -->
@@ -40,7 +40,7 @@
       </p>
       <p class="dashboard-link" onclick="window.location.href='/A_dashboard#transaction'">
         <span class="sidebar-icon">🧾</span>
-        <span>Transaction</span>
+        <span>Transactions</span>
       </p>
       <p class="dashboard-link" onclick="window.location.href='/A_dashboard#library'">
         <span class="sidebar-icon">📚</span>
@@ -48,7 +48,7 @@
       </p>
       <p class="dashboard-link">
         <span class="sidebar-icon">👨‍💻</span>
-        <span>Cashier</span>
+        <span>Cashiers</span>
       </p>
     </nav>
 
@@ -84,7 +84,7 @@
               <span>Profile</span>
             </a>
 
-            <!-- Change Password pindah ke Profile (modal) -->
+            <!-- Change Password moved to Profile (modal) -->
             <a href="#" class="user-menu-item" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
               <span class="user-menu-icon">⚙️</span>
               <span>Change Password</span>
@@ -106,10 +106,10 @@
       <div class="page-header">
         <div>
           <h2 class="page-title">Profile</h2>
-          <p class="page-subtitle">Kelola informasi akun admin Yoomie kamu.</p>
+          <p class="page-subtitle">Manage your Yoomie admin account information.</p>
         </div>
 
-        <!-- tombol cepat -->
+        <!-- Quick button -->
         <div class="page-actions">
           <button type="button" class="btn btn-primary-soft" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
             Change Password
@@ -125,7 +125,7 @@
           </div>
           <h3 class="profile-name" th:text="${admin.fullName}">Admin</h3>
           <p class="profile-role">Admin</p>
-          <p class="profile-email" th:text="${admin.email}">admin@tokoanda.com</p>
+          <p class="profile-email" th:text="${admin.email}">admin@yourstore.com</p>
         </div>
 
         <!-- Right -->
@@ -158,15 +158,15 @@
               <input type="email"
                      id="email"
                      class="form-control profile-input"
-                     placeholder="admin@tokoanda.com"
+                     placeholder="admin@yourstore.com"
                      th:field="*{email}">
             </div>
 
-            <!-- Password tidak ditampilkan di profile -->
+            <!-- Password is not shown on profile -->
             <div class="mb-3">
               <label class="form-label profile-label">Password</label>
               <input type="text" class="form-control profile-input" value="********" disabled>
-              <small class="text-muted">Untuk keamanan, password hanya bisa diubah lewat menu “Change Password”.</small>
+              <small class="text-muted">For security reasons, you can only change your password via the “Change Password” menu.</small>
             </div>
 
             <div class="d-flex justify-content-end gap-2 mt-3">
@@ -203,7 +203,7 @@
         <div class="mb-2">
           <label class="form-label">New Password</label>
           <input type="password" class="form-control" id="newPassword">
-          <small class="text-muted">Minimal 8 karakter & mengandung 1 karakter spesial.</small>
+          <small class="text-muted">Minimum 8 characters & must include 1 special character.</small>
         </div>
 
         <div class="mb-2">
@@ -220,7 +220,7 @@
   </div>
 </div>
 
-<!-- JS dropdown user, dll -->
+<!-- JS dropdown user, etc. -->
 <script src="/js/A_dashboard.js"></script>
 
 <!-- JS Change Password -->
@@ -238,8 +238,8 @@
       alertBox.classList.add("d-none");
     }
     function validateNewPassword(pw) {
-      if (!pw || pw.length < 8) return "Password baru minimal 8 karakter.";
-      if (!/[^A-Za-z0-9]/.test(pw)) return "Password baru harus mengandung minimal 1 karakter spesial (contoh: !@#$%).";
+      if (!pw || pw.length < 8) return "New password must be at least 8 characters.";
+      if (!/[^A-Za-z0-9]/.test(pw)) return "New password must include at least 1 special character (e.g., !@#$%).";
       return "";
     }
 
@@ -250,10 +250,10 @@
       const newPassword = document.getElementById("newPassword").value;
       const confirmPassword = document.getElementById("confirmPassword").value;
 
-      if (!currentPassword) return showError("Current password wajib diisi.");
+      if (!currentPassword) return showError("Current password is required.");
       const pwMsg = validateNewPassword(newPassword);
       if (pwMsg) return showError(pwMsg);
-      if (newPassword !== confirmPassword) return showError("Konfirmasi password tidak sama.");
+      if (newPassword !== confirmPassword) return showError("Password confirmation does not match.");
 
       try {
         const res = await fetch("/profile/change-password", {
@@ -269,12 +269,12 @@
           if (body && typeof body === "object") {
             showError(body.message || Object.values(body).join(" | "));
           } else {
-            showError(body || "Gagal mengubah password.");
+            showError(body || "Failed to change password.");
           }
           return;
         }
 
-        // sukses
+        // success
         document.getElementById("currentPassword").value = "";
         document.getElementById("newPassword").value = "";
         document.getElementById("confirmPassword").value = "";
@@ -283,9 +283,9 @@
         const modal = bootstrap.Modal.getInstance(modalEl);
         modal.hide();
 
-        alert("Password berhasil diubah!");
+        alert("Password updated successfully!");
       } catch (e) {
-        showError("Terjadi kesalahan koneksi. Coba lagi.");
+        showError("Network error. Please try again.");
       }
     });
   });

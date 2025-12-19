@@ -1,29 +1,35 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   <title>Yoomie Admin - Register</title>
 
   <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
-        crossorigin="anonymous">
+  <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+          crossorigin="anonymous"
+  />
 
-  <!-- Bootstrap Icons (UNTUK ICON MATA + SERU) -->
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <!-- Bootstrap Icons -->
+  <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+  />
 
-  <!-- CSS Lokal -->
-  <link rel="stylesheet" th:href="@{/css/loginregister.css}">
+  <!-- Local CSS -->
+  <link rel="stylesheet" th:href="@{/css/loginregister.css}" />
 
   <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap"
-          rel="stylesheet">
+          rel="stylesheet"
+  />
 </head>
 
 <body class="auth-body">
@@ -36,15 +42,18 @@
           <span class="brand-dot"></span>
           <span class="brand-text">Yoomie Admin</span>
         </div>
+
         <div>
-          <img src="img/logoYoomie.svg" style="height: 230px; width: 250px" alt="Yoomie Logo">
+          <img src="img/logoYoomie.svg" style="height: 230px; width: 250px" alt="Yoomie Logo" />
         </div>
+
         <h2 class="auth-left-title mb-3">
-          Create your admin<br>account to manage Yoomie.
+          Create your admin<br />account to manage Yoomie.
         </h2>
+
         <p class="auth-left-subtitle mb-0">
-          Tambahkan akun admin untuk mengontrol dashboard, kelola kasir,
-          dan memantau performa toko dari satu tempat.
+          Add an admin account to control the dashboard, manage cashiers,
+          and monitor store performance from one place.
         </p>
       </div>
     </div>
@@ -53,9 +62,11 @@
     <div class="col-lg-7 auth-right p-4 p-lg-5">
       <div class="mb-4">
         <h3 class="auth-title mb-2">Admin Registration</h3>
+
         <p class="auth-subtitle mb-0">
-          Isi data di bawah untuk membuat akun admin baru.
+          Fill in the details below to create a new admin account.
         </p>
+
         <p class="auth-subtitle mt-1">
           Already have an account?
           <a href="/login" class="auth-link">Sign in</a>
@@ -65,66 +76,75 @@
       <form id="registerForm" method="POST" class="auth-form" novalidate>
         <div class="mb-2">
           <label class="form-label auth-label" for="adminName">Admin Name</label>
-          <input type="text"
-                 id="adminName"
-                 name="adminName"
-                 class="form-control auth-input"
-                 placeholder="Admin username"
-                 required>
+          <input
+                  type="text"
+                  id="adminName"
+                  name="adminName"
+                  class="form-control auth-input"
+                  placeholder="Admin username"
+                  required
+          />
         </div>
 
         <div class="mb-2">
           <label class="form-label auth-label" for="fullName">Full Name</label>
-          <input type="text"
-                 id="fullName"
-                 name="fullName"
-                 class="form-control auth-input"
-                 placeholder="Full name"
-                 required>
+          <input
+                  type="text"
+                  id="fullName"
+                  name="fullName"
+                  class="form-control auth-input"
+                  placeholder="Full name"
+                  required
+          />
         </div>
 
         <div class="mb-2">
           <label class="form-label auth-label" for="email">Email</label>
-          <input type="email"
-                 id="email"
-                 name="email"
-                 class="form-control auth-input"
-                 placeholder="admin@tokoanda.com"
-                 required>
+          <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  class="form-control auth-input"
+                  placeholder="admin@yourstore.com"
+                  required
+          />
         </div>
 
-        <!-- PASSWORD: ICON SERU + ICON MATA -->
+        <!-- PASSWORD: WARNING ICON + EYE ICON -->
         <div class="mb-2">
           <label class="form-label auth-label" for="password">Password</label>
 
           <div class="pw-wrap">
-            <input type="password"
-                   id="password"
-                   name="password"
-                   class="form-control auth-input pw-input"
-                   placeholder="Password"
-                   required>
+            <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    class="form-control auth-input pw-input"
+                    placeholder="Password"
+                    required
+            />
 
             <div class="pw-actions">
-              <!-- ikon seru (muncul saat invalid) -->
+              <!-- warning icon (shows when invalid) -->
               <span id="pwInvalidIcon" class="pw-error d-none" aria-hidden="true">
-                <i class="bi bi-exclamation-circle"></i>
-              </span>
+                  <i class="bi bi-exclamation-circle"></i>
+                </span>
 
-              <!-- ikon mata -->
+              <!-- eye icon -->
               <button type="button" class="pw-toggle" id="togglePassword" aria-label="Show password">
                 <i class="bi bi-eye-slash"></i>
               </button>
             </div>
           </div>
 
-          <div id="passwordFeedback" class="invalid-feedback d-block" style="display:none;"></div>
+          <div id="passwordFeedback" class="invalid-feedback d-block" style="display: none;"></div>
+
           <small class="text-muted">
-            Minimal 8 karakter & mengandung 1 karakter spesial (contoh: !@#$%).
+            Minimum 8 characters & include 1 special character (e.g., !@#$%).
           </small>
         </div>
 
-        <!-- box error biar lebih rapi dari pada alert -->
+        <!-- Error box (cleaner than alert) -->
         <div id="errorMessage" class="auth-error d-none"></div>
 
         <button type="submit" class="btn auth-btn w-100 mt-2">
@@ -154,11 +174,11 @@
     let pwTouched = false;
 
     function validatePassword(pw) {
-      // ✅ KONDISI BARU: kosong
-      if (!pw || pw.trim().length === 0) return 'Password wajib diisi.';
-      if (pw.length < 8) return 'Password minimal 8 karakter.';
+      // Condition: empty
+      if (!pw || pw.trim().length === 0) return 'Password is required.';
+      if (pw.length < 8) return 'Password must be at least 8 characters.';
       const hasSpecial = /[^A-Za-z0-9]/.test(pw);
-      if (!hasSpecial) return 'Harus mengandung minimal 1 karakter spesial (contoh: !@#$%).';
+      if (!hasSpecial) return 'Password must include at least 1 special character (e.g., !@#$%).';
       return '';
     }
 
@@ -177,7 +197,7 @@
       } else {
         passwordInput.classList.remove('is-invalid');
 
-        // opsional: kalau mau hijau saat valid & sudah disentuh
+        // Optional: show green state when valid & already touched
         if (pwTouched && !message && passwordInput.value.trim().length > 0) {
           passwordInput.classList.add('is-valid');
         } else {
@@ -192,19 +212,19 @@
       }
     }
 
-    // realtime validate
+    // Real-time validation
     passwordInput.addEventListener('input', () => {
       pwTouched = true;
       setPasswordState(validatePassword(passwordInput.value));
     });
 
-    // kalau user fokus lalu keluar tanpa isi apa-apa, tetap muncul "wajib diisi"
+    // If user leaves field without input, show "required"
     passwordInput.addEventListener('blur', () => {
       pwTouched = true;
       setPasswordState(validatePassword(passwordInput.value));
     });
 
-    // toggle show/hide password
+    // Toggle show/hide password
     togglePasswordBtn.addEventListener('click', () => {
       const hidden = passwordInput.type === 'password';
       passwordInput.type = hidden ? 'text' : 'password';
@@ -213,11 +233,11 @@
               : '<i class="bi bi-eye-slash"></i>';
     });
 
-    // submit (single handler)
+    // Submit (single handler)
     form.addEventListener('submit', async function (event) {
       event.preventDefault();
 
-      // validasi password dulu
+      // Validate password first
       pwTouched = true;
       const msg = validatePassword(passwordInput.value);
       setPasswordState(msg);
@@ -248,7 +268,7 @@
             if (body.password) setPasswordState(body.password);
             errorBox.textContent = Object.values(body).join(' | ');
           } else {
-            errorBox.textContent = body || 'Register gagal.';
+            errorBox.textContent = body || 'Registration failed.';
           }
           errorBox.classList.remove('d-none');
           return;
@@ -256,12 +276,11 @@
 
         window.location.href = '/login';
       } catch (e) {
-        errorBox.textContent = 'Terjadi kesalahan koneksi. Coba lagi.';
+        errorBox.textContent = 'Network error. Please try again.';
         errorBox.classList.remove('d-none');
       }
     });
   })();
 </script>
-
 </body>
 </html>
