@@ -9,6 +9,52 @@ document.addEventListener('DOMContentLoaded', function () {
         statusUpdateFailed: 'Failed to update status.'
     };
 
+    function onlyDigits(str) {
+        return String(str ?? '').replace(/[^\d]/g, '');
+    }
+
+    function formatThousands(rawDigits) {
+        if (!rawDigits) return '';
+        return new Intl.NumberFormat('id-ID').format(Number(rawDigits));
+    }
+
+    /**
+     * Mengubah input display (formatted) <-> hidden (angka asli)
+     * hiddenId: id input hidden yang dikirim ke backend
+     * displayId: id input text yang dilihat user (Rp + titik)
+     */
+    function initPriceMask(hiddenId, displayId) {
+        const hidden = document.getElementById(hiddenId);
+        const display = document.getElementById(displayId);
+        if (!hidden || !display) return;
+
+        // Sync awal (kalau ada value dari server)
+        const initial = onlyDigits(hidden.value);
+        display.value = formatThousands(initial);
+
+        display.addEventListener('input', () => {
+            const raw = onlyDigits(display.value);
+            hidden.value = raw;                 // backend terima angka murni
+            display.value = formatThousands(raw); // user lihat yang sudah rapi
+            // simpel: cursor selalu di akhir (stabil & aman)
+            display.setSelectionRange(display.value.length, display.value.length);
+        });
+    }
+
+    function formatRupiah(value) {
+        if (value === null || value === undefined || value === '') return '';
+        const n = Number(String(value).replace(/[^0-9.-]/g, ''));
+        if (Number.isNaN(n)) return String(value);
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            maximumFractionDigits: 0
+        }).format(n);
+    }
+
+    initPriceMask('productPrice', 'productPriceDisplay');
+    initPriceMask('editProductPrice', 'editProductPriceDisplay');
+
     // ========= 1) SIDEBAR TAB NAVIGATION (keeps ?section only) =========
     const dashboardLinks = document.querySelectorAll('.dashboard-link');
     const contentDashboard = document.querySelectorAll('.content-dashboard');
@@ -103,6 +149,11 @@ document.addEventListener('DOMContentLoaded', function () {
             if (elBrand) elBrand.value = productBrand || '';
             if (elCategory) elCategory.value = productCategory || '';
             if (elPrice) elPrice.value = productPrice || '';
+            const elPriceDisplay = document.getElementById('editProductPriceDisplay');
+            if (elPriceDisplay) {
+                const raw = onlyDigits(productPrice || '');
+                elPriceDisplay.value = formatThousands(raw);
+            }
             if (elStock) elStock.value = productStock || '';
 
             const previewPhoto = document.getElementById('previewProductPhoto');
@@ -173,8 +224,8 @@ document.addEventListener('DOMContentLoaded', function () {
               <tr>
                 <td>${item.productName ?? ''}</td>
                 <td>${item.quantity ?? ''}</td>
-                <td>${item.price ?? ''}</td>
-                <td>${item.subTotal ?? ''}</td>
+                <td>${formatRupiah(item.price)}</td>
+                <td>${formatRupiah(item.subTotal)}</td>
               </tr>
             `;
                         paymentItemsTable.insertAdjacentHTML('beforeend', row);

@@ -30,6 +30,9 @@
     <!-- SIDEBAR -->
     <aside id="sidebar" class="dashboard-sidebar">
         <div class="sidebar-header">
+            <div class="justify-content-center">
+                <img src="img/logoYoomie.svg" style="height: 50px; width: 50px" alt="Yoomie Logo">
+            </div>
             <span class="sidebar-brand">Yoomie Admin</span>
         </div>
 
@@ -66,9 +69,6 @@
             </div>
 
             <div class="topbar-right">
-                <button class="topbar-icon-btn" type="button" aria-label="Notifications">
-                    🔔
-                </button>
 
                 <!-- USER DROPDOWN -->
                 <div class="topbar-user" id="topbarUser">
@@ -90,11 +90,6 @@
                             <span>Profile</span>
                         </a>
 
-                        <!-- balikin jadi Preferences biasa (tanpa modal language) -->
-                        <a href="#" class="user-menu-item">
-                            <span class="user-menu-icon">⚙️</span>
-                            <span>Preferences</span>
-                        </a>
 
                         <div class="user-menu-divider"></div>
 
@@ -319,9 +314,22 @@
                                            name="category" th:field="*{category}" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="productPrice" class="form-label">Price</label>
-                                    <input type="number" class="form-control" id="productPrice"
-                                           name="price" th:field="*{price}" required>
+                                    <label class="form-label">Price</label>
+
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rp.</span>
+                                        <!-- input yang dilihat admin (formatted) -->
+                                        <input type="text"
+                                               class="form-control"
+                                               id="productPriceDisplay"
+                                               inputmode="numeric"
+                                               autocomplete="off"
+                                               placeholder="1.000.000"
+                                               required>
+                                    </div>
+
+                                    <!-- input yang dikirim ke backend (angka asli) -->
+                                    <input type="hidden" id="productPrice" name="price" th:field="*{price}">
                                 </div>
                                 <div class="mb-3">
                                     <label for="productStock" class="form-label">Stock</label>
@@ -374,8 +382,22 @@
                                     <input type="text" class="form-control" id="editProductCategory" name="category">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="editProductPrice" class="form-label">Price</label>
-                                    <input type="number" class="form-control" id="editProductPrice" name="price">
+                                    <label class="form-label">Price</label>
+
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rp.</span>
+                                        <!-- input yang dilihat admin (formatted) -->
+                                        <input type="text"
+                                               class="form-control"
+                                               id="editProductPriceDisplay"
+                                               inputmode="numeric"
+                                               autocomplete="off"
+                                               placeholder="1.000.000"
+                                               required>
+                                    </div>
+
+                                    <!-- input yang dikirim ke backend (angka asli) -->
+                                    <input type="hidden" id="editProductPrice" name="price">
                                 </div>
                                 <div class="mb-3">
                                     <label for="editProductStock" class="form-label">Stock</label>
@@ -465,7 +487,7 @@
                                 <td th:text="${product.name}"></td>
                                 <td th:text="${product.brand}"></td>
                                 <td th:text="${product.category}"></td>
-                                <td th:text="${product.price}"></td>
+                                <td th:text="${'Rp. ' + #numbers.formatDecimal(product.price, 1, 'POINT', 0, 'COMMA')}">Rp. 0</td>
                                 <td th:text="${product.stock}"></td>
                                 <td>
                                     <button class="btn btn-light btn-sm button-editProd"
@@ -476,7 +498,7 @@
                                                      data-name=${product.name},
                                                      data-brand=${product.brand},
                                                      data-category=${product.category},
-                                                     data-price=${product.price},
+                                                     data-price=${#numbers.formatDecimal(product.price, 1, 'NONE', 0, 'NONE')},
                                                      data-stock=${product.stock}">
                                         Edit
                                     </button>
