@@ -29,7 +29,8 @@
 
   <!-- SIDEBAR -->
   <aside id="sidebar" class="dashboard-sidebar">
-    <div class="sidebar-header">
+    <div class="sidebar-header sidebar-header-inline">
+      <img th:src="@{/img/logoYoomie.svg}" class="sidebar-logo" alt="Yoomie Logo">
       <span class="sidebar-brand">Yoomie Admin</span>
     </div>
 
@@ -69,6 +70,9 @@
       <div class="topbar-right">
 
         <div class="topbar-user" id="topbarUser">
+          <div class="topbar-avatar">
+            <i class="bi bi-person-circle" style="font-size: 27px;"></i>
+          </div>
           <div class="topbar-user-text">
             <span class="topbar-user-name" th:text="${admin.fullName}">Admin</span>
             <span class="topbar-user-role">Admin</span>
@@ -79,12 +83,6 @@
             <a th:href="@{/profile}" class="user-menu-item">
               <span class="user-menu-icon">👤</span>
               <span>Profile</span>
-            </a>
-
-            <!-- Change Password moved to Profile (modal) -->
-            <a href="#" class="user-menu-item" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-              <span class="user-menu-icon">⚙️</span>
-              <span>Change Password</span>
             </a>
 
             <div class="user-menu-divider"></div>

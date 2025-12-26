@@ -10,7 +10,9 @@
     min-height: 100vh;
 }
 
-/* SIDEBAR */
+/* =========================
+   SIDEBAR (FULL)
+   ========================= */
 .dashboard-sidebar {
     width: 250px;
     background: radial-gradient(circle at top left, #407bff, #0b4575);
@@ -20,6 +22,7 @@
     flex-direction: column;
 }
 
+/* Header default (kalau ada style lama) */
 .sidebar-header {
     display: flex;
     flex-direction: column;
@@ -27,15 +30,35 @@
     margin-bottom: 1.5rem;
 }
 
-.sidebar-logo img {
-    max-width: 150px;
+/* ✅ Header INLINE: logo + text sejajar */
+.sidebar-header.sidebar-header-inline {
+    display: flex;
+    flex-direction: row;          /* penting: paksa jadi sejajar */
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    margin-bottom: 1.5rem;
 }
 
+/* Logo */
+.sidebar-logo {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+    flex: 0 0 auto;
+}
+
+/* Brand text */
 .sidebar-brand {
+    margin: 0;
+    line-height: 1.1;
+    white-space: nowrap;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 1.25rem;           /* sesuaikan kalau mau lebih kecil/besar */
+    letter-spacing: 0.2px;
 }
 
+/* Menu wrapper */
 .sidebar-menu {
     display: flex;
     flex-direction: column;
@@ -44,6 +67,7 @@
     margin-bottom: auto;
 }
 
+/* Link item */
 .dashboard-link {
     display: flex;
     align-items: center;
@@ -62,19 +86,42 @@
     font-size: 1.1rem;
 }
 
+/* Hover */
 .dashboard-link:hover {
     background: rgba(4, 21, 55, 0.35);
     transform: translateX(2px);
 }
 
+/* Active */
 .dashboard-link.active {
     background: rgba(255, 255, 255, 0.18);
     color: #ffffff;
 }
 
+/* Footer */
 .sidebar-footer {
     font-size: 0.75rem;
     color: #d1d5db;
+    margin-top: 1rem;
+}
+
+/* Optional: saat sidebar collapsed */
+.dashboard-sidebar.collapsed {
+    width: 90px;                  /* contoh, sesuaikan */
+    padding: 1.4rem 0.9rem;
+}
+
+.dashboard-sidebar.collapsed .sidebar-brand {
+    display: none;
+}
+
+.dashboard-sidebar.collapsed .dashboard-link {
+    justify-content: center;
+    padding: 0.55rem;
+}
+
+.dashboard-sidebar.collapsed .dashboard-link span:not(.sidebar-icon) {
+    display: none;                /* sembunyikan teks menu, sisakan icon */
 }
 
 /* MAIN AREA */
