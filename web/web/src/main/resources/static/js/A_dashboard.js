@@ -1,13 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Ini BUKAN i18n bundle, hanya konstanta teks untuk JS
-    const I18N = {
-        loading: 'Loading...',
-        noStockLogs: 'No stock logs yet.',
-        cannotLoad: 'Unable to load data.',
-        errorGeneric: 'An error occurred.',
-        statusUpdated: 'Status updated successfully!',
-        statusUpdateFailed: 'Failed to update status.'
-    };
 
     function onlyDigits(str) {
         return String(str ?? '').replace(/[^\d]/g, '');
