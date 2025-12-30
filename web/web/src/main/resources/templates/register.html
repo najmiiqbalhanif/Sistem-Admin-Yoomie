@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   <title>Yoomie Admin - Register</title>
 
-  <!-- Bootstrap -->
+  <!-- Bootstrap CSS -->
   <link
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
           rel="stylesheet"
@@ -38,6 +38,7 @@
 <body class="auth-body">
 <div class="container auth-container d-flex justify-content-center align-items-center min-vh-100">
   <div class="row auth-card shadow-lg">
+
     <!-- LEFT PANEL -->
     <div class="col-lg-5 d-flex flex-column justify-content-between align-items-start auth-left p-4 p-lg-5">
       <div>
@@ -47,6 +48,7 @@
         </div>
 
         <div>
+          <!-- NOTE: kalau kamu pakai th:src, silakan ganti ke th:src="@{/img/logoYoomie.svg}" -->
           <img src="img/logoYoomie.svg" style="height: 230px; width: 250px" alt="Yoomie Logo" />
         </div>
 
@@ -77,6 +79,7 @@
       </div>
 
       <form id="registerForm" method="POST" class="auth-form" novalidate>
+
         <div class="mb-1">
           <label class="form-label auth-label" for="adminName">Admin Name</label>
           <input
@@ -87,6 +90,7 @@
                   placeholder="Admin username"
                   required
           />
+          <div id="adminNameFeedback" class="invalid-feedback"></div>
         </div>
 
         <div class="mb-1">
@@ -99,6 +103,7 @@
                   placeholder="Full name"
                   required
           />
+          <div id="fullNameFeedback" class="invalid-feedback"></div>
         </div>
 
         <div class="mb-1">
@@ -111,6 +116,7 @@
                   placeholder="admin@yourstore.com"
                   required
           />
+          <div id="emailFeedback" class="invalid-feedback"></div>
         </div>
 
         <!-- PASSWORD: WARNING ICON + EYE ICON -->
@@ -130,8 +136,8 @@
             <div class="pw-actions">
               <!-- warning icon (shows when invalid) -->
               <span id="pwInvalidIcon" class="pw-error d-none" aria-hidden="true">
-                  <i class="bi bi-exclamation-circle"></i>
-                </span>
+                <i class="bi bi-exclamation-circle"></i>
+              </span>
 
               <!-- eye icon -->
               <button type="button" class="pw-toggle" id="togglePassword" aria-label="Show password">
@@ -140,14 +146,14 @@
             </div>
           </div>
 
-          <div id="passwordFeedback" class="invalid-feedback d-block" style="display: none;"></div>
+          <div id="passwordFeedback" class="invalid-feedback d-block" style="display:none;"></div>
 
           <small class="text-muted">
             Minimum 8 characters & include 1 special character (e.g., !@#$%).
           </small>
         </div>
 
-        <!-- Error box (cleaner than alert) -->
+        <!-- Optional: keep error box (but we mainly use toast now) -->
         <div id="errorMessage" class="auth-error d-none"></div>
 
         <button type="submit" class="btn auth-btn w-100 mt-2">
@@ -162,9 +168,30 @@
   </div>
 </div>
 
+<!-- Toast Container (Popup) -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+  <div id="appToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div id="appToastBody" class="toast-body"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS Bundle (Toast needs this) -->
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous">
+</script>
+
 <script>
   (function () {
     const form = document.getElementById('registerForm');
+
+    const adminNameInput = document.getElementById('adminName');
+    const fullNameInput = document.getElementById('fullName');
+    const emailInput = document.getElementById('email');
 
     const passwordInput = document.getElementById('password');
     const passwordFeedback = document.getElementById('passwordFeedback');
@@ -174,10 +201,51 @@
     const submitBtn = form.querySelector('button[type="submit"]');
     const errorBox = document.getElementById('errorMessage');
 
+    // Toast refs
+    const toastEl = document.getElementById('appToast');
+    const toastBodyEl = document.getElementById('appToastBody');
+
     let pwTouched = false;
 
+    function showToast(type, message) {
+      const bgClass = {
+        success: 'text-bg-success',
+        danger: 'text-bg-danger',
+        warning: 'text-bg-warning',
+        info: 'text-bg-info'
+      }[type] || 'text-bg-danger';
+
+      toastEl.className = `toast align-items-center border-0 ${bgClass}`;
+      toastBodyEl.textContent = message;
+
+      const toast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 4500 });
+      toast.show();
+    }
+
+    function setFieldError(fieldId, message) {
+      const input = document.getElementById(fieldId);
+      const fb = document.getElementById(fieldId + 'Feedback');
+      if (!input || !fb) return;
+
+      input.classList.add('is-invalid');
+      fb.textContent = message || 'Invalid value.';
+    }
+
+    function clearFieldError(fieldId) {
+      const input = document.getElementById(fieldId);
+      const fb = document.getElementById(fieldId + 'Feedback');
+      if (!input || !fb) return;
+
+      input.classList.remove('is-invalid');
+      fb.textContent = '';
+    }
+
+    function clearAllFieldErrors() {
+      ['adminName', 'fullName', 'email'].forEach(clearFieldError);
+      // password handled by setPasswordState
+    }
+
     function validatePassword(pw) {
-      // Condition: empty
       if (!pw || pw.trim().length === 0) return 'Password is required.';
       if (pw.length < 8) return 'Password must be at least 8 characters.';
       const hasSpecial = /[^A-Za-z0-9]/.test(pw);
@@ -200,7 +268,6 @@
       } else {
         passwordInput.classList.remove('is-invalid');
 
-        // Optional: show green state when valid & already touched
         if (pwTouched && !message && passwordInput.value.trim().length > 0) {
           passwordInput.classList.add('is-valid');
         } else {
@@ -215,13 +282,17 @@
       }
     }
 
-    // Real-time validation
+    // Clear errors while typing
+    adminNameInput.addEventListener('input', () => clearFieldError('adminName'));
+    fullNameInput.addEventListener('input', () => clearFieldError('fullName'));
+    emailInput.addEventListener('input', () => clearFieldError('email'));
+
+    // Password validation realtime
     passwordInput.addEventListener('input', () => {
       pwTouched = true;
       setPasswordState(validatePassword(passwordInput.value));
     });
 
-    // If user leaves field without input, show "required"
     passwordInput.addEventListener('blur', () => {
       pwTouched = true;
       setPasswordState(validatePassword(passwordInput.value));
@@ -236,25 +307,49 @@
               : '<i class="bi bi-eye-slash"></i>';
     });
 
-    // Submit (single handler)
+    // Submit
     form.addEventListener('submit', async function (event) {
       event.preventDefault();
 
-      // Validate password first
-      pwTouched = true;
-      const msg = validatePassword(passwordInput.value);
-      setPasswordState(msg);
-      if (msg) return;
-
-      const formData = {
-        adminName: document.querySelector('[name="adminName"]').value,
-        fullName: document.querySelector('[name="fullName"]').value,
-        email: document.querySelector('[name="email"]').value,
-        password: document.querySelector('[name="password"]').value
-      };
-
+      clearAllFieldErrors();
       errorBox.classList.add('d-none');
       errorBox.textContent = '';
+
+      // Front validation basic (biar langsung enak)
+      let hasError = false;
+
+      if (!adminNameInput.value.trim()) {
+        setFieldError('adminName', 'Admin name is required.');
+        hasError = true;
+      }
+      if (!fullNameInput.value.trim()) {
+        setFieldError('fullName', 'Full name is required.');
+        hasError = true;
+      }
+      if (!emailInput.value.trim()) {
+        setFieldError('email', 'Email is required.');
+        hasError = true;
+      } else if (!emailInput.checkValidity()) {
+        setFieldError('email', 'Format email tidak valid.');
+        hasError = true;
+      }
+
+      pwTouched = true;
+      const pwMsg = validatePassword(passwordInput.value);
+      setPasswordState(pwMsg);
+      if (pwMsg) hasError = true;
+
+      if (hasError) {
+        showToast('danger', 'Sign up failed. Please check the highlighted fields.');
+        return;
+      }
+
+      const formData = {
+        adminName: adminNameInput.value.trim(),
+        fullName: fullNameInput.value.trim(),
+        email: emailInput.value.trim(),
+        password: passwordInput.value
+      };
 
       try {
         const res = await fetch('/register', {
@@ -264,23 +359,37 @@
         });
 
         const ct = res.headers.get('content-type') || '';
-        const body = ct.includes('application/json') ? await res.json() : await res.text();
+        const body = ct.includes('application/json')
+                ? await res.json()
+                : { message: await res.text() };
 
         if (!res.ok) {
+          // Backend handler kamu mengirim: {field:"message"} atau {message:"..."}
           if (body && typeof body === 'object') {
+            // Field errors
+            ['adminName', 'fullName', 'email'].forEach((f) => {
+              if (body[f]) setFieldError(f, body[f]);
+            });
+
+            // Password error from backend (kalau ada)
             if (body.password) setPasswordState(body.password);
-            errorBox.textContent = Object.values(body).join(' | ');
+
+            const msg = body.message
+                    ? body.message
+                    : Object.values(body).join(' | ') || 'Registration failed.';
+
+            showToast('danger', 'Sign up failed: ' + msg);
           } else {
-            errorBox.textContent = body || 'Registration failed.';
+            showToast('danger', 'Sign up failed. Please try again.');
           }
-          errorBox.classList.remove('d-none');
           return;
         }
 
-        window.location.href = '/login';
+        showToast('success', body.message || 'Registration success! Redirecting...');
+        setTimeout(() => window.location.href = '/login', 700);
+
       } catch (e) {
-        errorBox.textContent = 'Network error. Please try again.';
-        errorBox.classList.remove('d-none');
+        showToast('danger', 'Network error. Please try again.');
       }
     });
   })();
