@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+import java.util.Map;
+
 @Controller
 public class loginRegisterController {
 
@@ -23,9 +25,9 @@ public class loginRegisterController {
 
     // REGISTER ADMIN
     @PostMapping("/register")
-    public @ResponseBody ResponseEntity<String> registerAdmin(@Valid @RequestBody AdminDTO adminDTO) {
+    public @ResponseBody ResponseEntity<?> registerAdmin(@Valid @RequestBody AdminDTO adminDTO) {
         adminService.registerAdmin(adminDTO);
-        return ResponseEntity.ok("Admin registered successfully");
+        return ResponseEntity.ok(Map.of("message", "Admin registered successfully"));
     }
 
     // Tampilkan halaman register (root diarahkan ke register admin)
