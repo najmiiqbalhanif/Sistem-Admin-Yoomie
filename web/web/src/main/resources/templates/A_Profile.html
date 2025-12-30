@@ -139,7 +139,9 @@
                      id="fullName"
                      class="form-control profile-input"
                      placeholder="Your full name"
-                     th:field="*{fullName}">
+                     th:field="*{fullName}"
+                     required
+              >
             </div>
 
             <div class="mb-3">
@@ -148,7 +150,9 @@
                      id="adminName"
                      class="form-control profile-input"
                      placeholder="Admin username"
-                     th:field="*{adminName}">
+                     th:field="*{adminName}"
+                     required
+              >
             </div>
 
             <div class="mb-3">
@@ -157,7 +161,9 @@
                      id="email"
                      class="form-control profile-input"
                      placeholder="admin@yourstore.com"
-                     th:field="*{email}">
+                     th:field="*{email}"
+                     required
+              >
             </div>
 
             <!-- Password is not shown on profile -->
