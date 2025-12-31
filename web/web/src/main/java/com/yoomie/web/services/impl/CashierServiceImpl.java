@@ -142,6 +142,14 @@ public class CashierServiceImpl implements CashierService {
     }
 
     @Override
+    public List<CashierDTO> getAllCashiers() {
+        return cashierRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+    }
+
+    @Override
     public CashierDTO DTOgetCashierById(Long id) {
         Cashier cashier = cashierRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Cashier not found"));
@@ -159,6 +167,7 @@ public class CashierServiceImpl implements CashierService {
                 .password(null) // ✅ JANGAN KIRIM HASH KE CLIENT
                 .fullName(cashier.getFullName())
                 .profileImage(fullProfileImageUrl)
+                .active(cashier.getActive())
                 .build();
     }
 
@@ -199,22 +208,23 @@ public class CashierServiceImpl implements CashierService {
 
     @Override
     @Transactional
-    public void deleteCashierById(Long cashierId) {
+    public void deactivateCashier(Long cashierId) {
         Cashier cashier = cashierRepository.findById(cashierId)
                 .orElseThrow(() ->
                         new EntityNotFoundException("Cashier not found: " + cashierId));
 
-        if (Boolean.TRUE.equals(cashier.getDeleted())) {
-            return; // sudah dihapus → tidak perlu apa-apa
-        }
-
         cashier.setActive(false);
-        cashier.setDeleted(true);
-
-        cashier.setEmail(cashier.getEmail() + ".deleted." + cashier.getId());
     }
 
+    @Override
+    @Transactional
+    public void activateCashier(Long cashierId) {
+        Cashier cashier = cashierRepository.findById(cashierId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Cashier not found: " + cashierId));
 
+        cashier.setActive(true);
+    }
 
     // Change Password (Cashier)
     @Override

@@ -23,9 +23,13 @@ public interface CashierService {
 
     public void updateCashierProfile(Long cashierId, String cashierName, String email, String fullName, MultipartFile profileImage) throws IOException;
 
-    void deleteCashierById(Long cashierId);
+    void deactivateCashier(Long cashierId);
+
+    void activateCashier(Long cashierId);
 
     List<CashierDTO> getAllActiveCashiers();
+
+    List<CashierDTO> getAllCashiers();
 
     void changePassword(Long cashierId, String currentPassword, String newPassword);
 

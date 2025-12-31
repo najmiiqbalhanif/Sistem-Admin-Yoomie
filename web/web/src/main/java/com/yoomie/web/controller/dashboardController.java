@@ -179,7 +179,7 @@ public class dashboardController {
         model.addAttribute("product", product);
 
         // Untuk Menampilkan List Cashier
-        model.addAttribute("cashiers", cashierService.getAllActiveCashiers());
+        model.addAttribute("cashiers", cashierService.getAllCashiers());
 
         return "A_dashboard";
     }
@@ -270,13 +270,23 @@ public class dashboardController {
         return "redirect:/A_dashboard?section=library";
     }
 
-    @PostMapping("/A_dashboard/delCashier/{id}")
-    public String deleteCashier(@PathVariable Long id, HttpSession session) {
+    @PostMapping("/A_dashboard/deactivateCashier/{id}")
+    public String deactivateCashier(@PathVariable Long id, HttpSession session) {
         Long adminId = (Long) session.getAttribute("adminId");
         if (adminId == null) return "redirect:/login";
 
-        cashierService.deleteCashierById(id);
+        cashierService.deactivateCashier(id);
         return "redirect:/A_dashboard?section=cashier";
     }
+
+    @PostMapping("/A_dashboard/activateCashier/{id}")
+    public String activateCashier(@PathVariable Long id, HttpSession session) {
+        Long adminId = (Long) session.getAttribute("adminId");
+        if (adminId == null) return "redirect:/login";
+
+        cashierService.activateCashier(id);
+        return "redirect:/A_dashboard?section=cashier";
+    }
+
 
 }

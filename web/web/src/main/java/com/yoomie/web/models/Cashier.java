@@ -28,9 +28,6 @@
         @Column(nullable = false)
         private Boolean active = true;
 
-        @Column(nullable = false)
-        private Boolean deleted = false;
-
         @Column(name = "profile_image")
         private String profileImage;
 

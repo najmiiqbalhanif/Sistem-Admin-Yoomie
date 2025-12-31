@@ -30,4 +30,6 @@ public class CashierDTO {
     private String fullName;
 
     private String profileImage;
+
+    private Boolean active;
 }

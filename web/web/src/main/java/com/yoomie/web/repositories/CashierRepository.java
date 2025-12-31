@@ -13,13 +13,8 @@ public interface CashierRepository extends JpaRepository<Cashier, Long> {
     boolean existsByEmail(String email);
     boolean existsByCashierName(String cashierName);
 
-    List<Cashier> findAllByDeletedFalse();
-
-    Optional<Cashier> findByEmailAndDeletedFalseAndActiveTrue(String email);
+    Optional<Cashier> findByEmailAndActiveTrue(String email);
 
     List<Cashier> findAllByActiveTrue();
 
-    Optional<Cashier> findByEmailAndActiveTrue(String email);
-
-    List<Cashier> findAllByActiveAndDeletedFalse(Boolean active);
 }

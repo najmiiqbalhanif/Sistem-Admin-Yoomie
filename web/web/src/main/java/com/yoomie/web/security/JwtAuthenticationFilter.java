@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String email = jwtUtil.getEmailFromToken(token);
 
                 boolean allowed = cashierRepository
-                        .findByEmailAndDeletedFalseAndActiveTrue(email)
+                        .findByEmailAndActiveTrue(email)
                         .isPresent();
 
                 if (!allowed) {
