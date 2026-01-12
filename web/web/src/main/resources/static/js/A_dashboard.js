@@ -63,6 +63,7 @@
 
         initPriceMask('productPrice', 'productPriceDisplay');
         initPriceMask('editProductPrice', 'editProductPriceDisplay');
+        loadCategories(['productCategory', 'editProductCategory']);
 
         // ========= 1) SIDEBAR TAB NAVIGATION (keeps ?section only) =========
         const dashboardLinks = document.querySelectorAll('.dashboard-link');
@@ -170,7 +171,7 @@
                 const previewPhoto = document.getElementById('previewProductPhoto');
                 if (previewPhoto) {
                     if (productPhoto) {
-                        previewPhoto.src = productPhoto;
+                        previewPhoto.src = productPhoto + '?v=' + Date.now();
                         previewPhoto.style.display = 'block';
                     } else {
                         previewPhoto.style.display = 'none';
@@ -245,6 +246,38 @@
                     .catch(error => console.error('Error fetching payment items:', error));
             });
         });
+
+        // ========= CATEGORY LIBRARY DROPDOWN =========
+        function loadCategories(selectIds = []) {
+            fetch('/api/categories')
+                .then(res => {
+                    if (!res.ok) throw new Error('Failed to load categories');
+                    return res.json();
+                })
+                .then(categories => {
+                    selectIds.forEach(id => {
+                        const select = document.getElementById(id);
+                        if (!select) return;
+
+                        const currentValue = select.value;
+
+                        select.innerHTML = '<option value="">-- Select Category --</option>';
+
+                        categories.forEach(cat => {
+                            const opt = document.createElement('option');
+                            opt.value = cat;
+                            opt.textContent = cat.replace(/_/g, ' ').toUpperCase();
+                            select.appendChild(opt);
+                        });
+
+                        // restore selected value (penting untuk EDIT MODAL)
+                        if (currentValue) {
+                            select.value = currentValue;
+                        }
+                    });
+                })
+                .catch(err => console.error('Category load error:', err));
+        }
 
         // ========= 7) STATUS DROPDOWN (if exists) =========
         document.querySelectorAll('.status-dropdown').forEach(dropdown => {
